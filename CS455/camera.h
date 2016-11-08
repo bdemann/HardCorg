@@ -10,7 +10,7 @@ public:
 	virtual ~Camera();
 	glm::mat4 getViewProjection() const;
 
-	glm::mat4 rotateCamera(int direction = 1) const;
+	glm::mat4 rotateCamera() const;
 
 	glm::mat4 translateCamera() const;
 

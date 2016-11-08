@@ -29,7 +29,7 @@ glm::mat4 Camera::getViewProjection() const {
 	return perspective * worldToCamera();
 }
 
-glm::mat4 Camera::rotateCamera(int direction) const {
+glm::mat4 Camera::rotateCamera() const {
 	return rotate;
 }
 
@@ -42,7 +42,7 @@ glm::mat4 Camera::translateCamera() const {
 }
 
 glm::mat4 Camera::worldToCamera() const {
-	return scale * rotateCamera(-1) * translateCamera();
+	return scale * rotateCamera() * translateCamera();
 }
 
 glm::mat4 Camera::clip() const {
@@ -61,15 +61,15 @@ glm::mat4 Camera::clip() const {
 }
 
 glm::vec3 Camera::getXVector() const {
-	return rotateCamera(1) * glm::vec4(1, 0, 0, 1);
+	return rotateCamera() * glm::vec4(1, 0, 0, 1);
 }
 
 glm::vec3 Camera::getYVector() const {
-	return rotateCamera(1) * glm::vec4(0, 1, 0, 1);
+	return rotateCamera() * glm::vec4(0, 1, 0, 1);
 }
 
 glm::vec3 Camera::getZVector() const {
-	return rotateCamera(1) * glm::vec4(0, 0, 1, 1);
+	return rotateCamera() * glm::vec4(0, 0, 1, 1);
 }
 
 void Camera::translateZ(float amt) {

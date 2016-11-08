@@ -13,17 +13,17 @@
 int main() {
 	Display display(800, 600, "Project 3");
 	
-	Shader shader("./res/basicShader");
+	Shader shader("./res/shaders/basicShader");
 
 	//Object carOBJ("./res/car.obj", "./res/car.bmp", glm::vec3(0, -0.95, 5.5), glm::vec3(0, 3.141596, 0), 1.3f);
-	Mesh car("./res/car.obj");
-	Texture textCar("./res/car.bmp");
+	Mesh car("./res/obj/car.obj");
+	Texture textCar("./res/textures/car.bmp");
 	Transform transCar(glm::vec3(0, -0.95, 5.5), glm::vec3(0, 3.141596, 0), glm::vec3(1.3, 1.3, 1.3));
 
-	Mesh t0("./res/tire.obj");
-	Mesh t1("./res/tire.obj");
-	Mesh t2("./res/tire.obj");
-	Mesh t3("./res/tire.obj");
+	Mesh t0("./res/obj/tire.obj");
+	Mesh t1("./res/obj/tire.obj");
+	Mesh t2("./res/obj/tire.obj");
+	Mesh t3("./res/obj/tire.obj");
 
 	//Object tireOBJ("./res/car.obj", "./res/car.bmp", glm::vec3(0, -0.95, 5.5), glm::vec3(0, 3.141596, 0), 1.3f);
 	float scaleTire = 0.35f;
@@ -35,16 +35,16 @@ int main() {
 
 	Mesh tires[] = {t0, t1, t2, t3};
 	Transform transTires[] = { tt0, tt1, tt2, tt3 };
-	Texture textTire("./res/tire.bmp");
+	Texture textTire("./res/textures/tire.bmp");
 
-	Mesh lot("./res/ParkingLot.obj");
-	Texture textLot("./res/ParkingLot.bmp");
+	Mesh lot("./res/obj/ParkingLot.obj");
+	Texture textLot("./res/textures/ParkingLot.bmp");
 	Transform transLot(glm::vec3(5.2, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(1.0, 1.0, 1.0));
 
-	Mesh cat("./res/cat.obj");
-	Texture textCat("./res/cat.jpg");
-	float catScale = 0.175f;
-	Transform transCat(glm::vec3(0, -0.1, 5.25), glm::vec3(0, 0, 0), glm::vec3(catScale, catScale, catScale));
+	//Mesh cat("./res/cat.obj");
+	//Texture textCat("./res/cat.jpg");
+	//float catScale = 0.175f;
+	//Transform transCat(glm::vec3(0, -0.1, 5.25), glm::vec3(0, 0, 0), glm::vec3(catScale, catScale, catScale));
 
 	Camera camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1), glm::vec3(0, 1, 0), 800, 600);
 
@@ -54,26 +54,26 @@ int main() {
 		display.clear(0.0f, 0.0f, 0.0f, 0);
 
 		shader.bind();
-		textCar.bind(0);
-		shader.update(transCar, camera);
-		car.draw();
+		//textCar.bind(0);
+		//shader.update(transCar, camera);
+		//car.draw();
 
 		textLot.bind(0);
 		shader.update(transLot, camera);
 		lot.draw();
 
-		transTires[0].getRotation().y = display.getRotation();
-		transTires[1].getRotation().y = display.getRotation() + 3.141596;
+		//transTires[0].getRotation().y = display.getRotation();
+		//transTires[1].getRotation().y = display.getRotation() + 3.141596;
 
-		textTire.bind(0);
-		for (int i = 0; i < 4; i++) {
-			shader.update(transTires[i], camera);
-			tires[i].draw();
-		}
+		//textTire.bind(0);
+		//for (int i = 0; i < 4; i++) {
+		//	shader.update(transTires[i], camera);
+		//	tires[i].draw();
+		//}
 
-		textCat.bind(0);
-		shader.update(transCat, camera);
-		cat.draw();
+		//textCat.bind(0);
+		//shader.update(transCat, camera);
+		//cat.draw();
 
 		display.update(camera, tt0, tt1);
 		counter += 0.005f;
