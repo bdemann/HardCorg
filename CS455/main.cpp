@@ -37,16 +37,20 @@ int main() {
 	Transform transTires[] = { tt0, tt1, tt2, tt3 };
 	Texture textTire("./res/textures/tire.bmp");
 
-	Mesh lot("./res/obj/ParkingLot.obj");
-	Texture textLot("./res/textures/ParkingLot.bmp");
-	Transform transLot(glm::vec3(5.2, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(1.0, 1.0, 1.0));
+	Mesh ground("./res/obj/ground.obj");
+	Texture textGround("./res/textures/ParkingLot.bmp");
+	Transform transGround(glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1.0, 1.0, 1.0));
+	
+	Mesh wall("./res/obj/boarder.obj");
+	Texture textWall("./res/textures/cat.jpg");
+	Transform transWall(glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1.0, 1.0, 1.0));
 
 	//Mesh cat("./res/cat.obj");
 	//Texture textCat("./res/cat.jpg");
 	//float catScale = 0.175f;
 	//Transform transCat(glm::vec3(0, -0.1, 5.25), glm::vec3(0, 0, 0), glm::vec3(catScale, catScale, catScale));
 
-	Camera camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1), glm::vec3(0, 1, 0), 800, 600);
+	Camera camera(glm::vec3(0, 30, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 800, 600);
 
 	float counter = 0.0f;
 
@@ -58,9 +62,13 @@ int main() {
 		//shader.update(transCar, camera);
 		//car.draw();
 
-		textLot.bind(0);
-		shader.update(transLot, camera);
-		lot.draw();
+		textGround.bind(0);
+		shader.update(transGround, camera);
+		ground.draw();
+
+		textWall.bind(0);
+		shader.update(transWall, camera);
+		wall.draw();
 
 		//transTires[0].getRotation().y = display.getRotation();
 		//transTires[1].getRotation().y = display.getRotation() + 3.141596;

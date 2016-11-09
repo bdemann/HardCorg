@@ -23,6 +23,7 @@ Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width,
 	this->zFar = 1000.0f;
 
 	this->perspective = clip();
+	this->perspective = glm::perspective(fov, 1.0f, zNear, zFar);
 }
 
 glm::mat4 Camera::getViewProjection() const {
