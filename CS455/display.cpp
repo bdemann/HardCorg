@@ -20,7 +20,7 @@
 //std::vector<GameObject> gameBoard[ROWS][COLS];
 Transform* transforms[ROWS][COLS];
 //std::vector<GameObject> nums;
-GameObject obj;
+//GameObject obj;
 
 int main() {
 	Display display(800, 600, "Project 3");
