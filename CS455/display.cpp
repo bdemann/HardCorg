@@ -1,9 +1,84 @@
-#include "display.h"
 #include <iostream>
 #include <GL/glew.h>
+#include <string>
+#include <vector>
+
+#include "gameObject.h"
+
+#include "display.h"
 #include "camera.h"
 #include "transform.h"
+#include "shader.h"
+#include "mesh.h"
+#include "texture.h"
+#include "simpleCamera.h"
 
+#define ROWS 13
+#define COLS 13
+
+
+//std::vector<GameObject> gameBoard[ROWS][COLS];
+Transform* transforms[ROWS][COLS];
+//std::vector<GameObject> nums;
+GameObject obj;
+
+int main() {
+	Display display(800, 600, "Project 3");
+
+	Shader shader("./res/shaders/basicShader");
+
+	Mesh t0("./res/obj/tire.obj");
+	Mesh t1("./res/obj/tire.obj");
+	Mesh t2("./res/obj/tire.obj");
+	Mesh t3("./res/obj/tire.obj");
+
+	float scaleTire = 0.35f;
+	glm::vec3 scaleVecTire(scaleTire, scaleTire, scaleTire);
+	Transform tt0(glm::vec3(0.5, -0.775, 6.2), glm::vec3(0, 0, 0), scaleVecTire);
+	Transform tt1(glm::vec3(-0.5, -0.775, 6.2), glm::vec3(0, 3.141596, 0), scaleVecTire);
+	Transform tt2(glm::vec3(0.5, -0.775, 4.875), glm::vec3(0, 0, 0), scaleVecTire);
+	Transform tt3(glm::vec3(-0.5, -0.775, 4.875), glm::vec3(0, 3.141596, 0), scaleVecTire);
+
+	Mesh tires[] = { t0, t1, t2, t3 };
+	Transform transTires[] = { tt0, tt1, tt2, tt3 };
+	Texture textTire("./res/textures/tire.bmp");
+
+	//transforms[0][0] = new Transform(glm::vec3(0.5, -0.775, 6.2), glm::vec3(0, 0, 0), scaleVecTire);
+
+	Mesh ground("./res/obj/ParkingLot.obj");
+	Texture textGround("./res/textures/ParkingLot.bmp");
+	//Transform transGround(glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1.0, 1.0, 1.0));
+	Transform transGround(glm::vec3(5.2, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(1.0, 1.0, 1.0));
+
+	Camera camera(glm::vec3(0, 30, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 800, 600);
+
+	while (!display.isClosed()) {
+		display.clear(0.0f, 0.0f, 0.0f, 0);
+
+		shader.bind();
+
+		for (int row = 0; row < ROWS; row++) {
+			for (int col = 0; col < COLS; col++) {
+				//std::vector<GameObject> cell = gameBoard[row][col];
+				//for (int i = 0; i < cell.size(); i++) {
+				//	//GameObject piece = cell.at(i);
+				//	//piece.bindTexture();
+				//	//shader.update(transforms[row][col], camera);
+				//	//piece.draw();
+				//}
+			}
+		}
+
+		textGround.bind(0);
+		shader.update(transGround, camera);
+		ground.draw();
+
+		display.update();
+	}
+
+
+	return 0;
+}
 
 Display::Display(int width, int height, const std::string& title) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -57,7 +132,7 @@ Display::~Display() {
 	SDL_Quit();
 }
 
-void Display::update(Camera& camera, Transform& trans1, Transform& trans2) {
+void Display::update() {
 	SDL_GL_SwapWindow(m_window);
 
 	SDL_Event e;
@@ -73,57 +148,43 @@ void Display::update(Camera& camera, Transform& trans1, Transform& trans2) {
 			switch (e.key.keysym.sym) {
 			case SDLK_w:
 				direction = "forward";
-				camera.translateZ(-0.1f);
 				break;
 			case SDLK_s:
 				direction = "back";
-				camera.translateZ(0.1f);
 				break;
 			case SDLK_a:
 				direction = "left";
-				camera.translateX(-0.1f);
 				break;
 			case SDLK_d:
 				direction = "right";
-				camera.translateX(0.1f);
 				break;
 			case SDLK_r:
 				direction = "up";
-				camera.translateY(0.1f);
 				break;
 			case SDLK_f:
 				direction = "down";
-				camera.translateY(-0.1f);
 				break;
 			case SDLK_i:
 				direction = "camera up";
-				camera.rotateX(0.1f);
 				break;
 			case SDLK_k:
 				direction = "camera down";
-				camera.rotateX(-0.1f);
 				break;
 			case SDLK_l:
 				direction = "camera right";
-				camera.rotateY(-0.1f);
 				break;
 			case SDLK_j:
 				direction = "camera left";
-				camera.rotateY(0.1f);
 				break;
 			case SDLK_y:
 				direction = "camera right";
-				camera.rotateZ(-0.1f);
 				break;
 			case SDLK_h:
 				direction = "camera left";
-				camera.rotateZ(0.1f);
 				break;
 			case SDLK_RIGHT:
-				setRotation(-0.01f);
 				break;
 			case SDLK_LEFT:
-				setRotation(0.01f);
 				break;
 			default:
 				direction = "null";
@@ -136,21 +197,17 @@ void Display::update(Camera& camera, Transform& trans1, Transform& trans2) {
 					if (e.jaxis.value > 0) {
 						if (e.jaxis.value > 15000) {
 							std::cout << "Run Right" << std::endl;
-							camera.translateX(-0.1f);
 						}
 						else {
 							std::cout << "Walk Right" << std::endl;
-							camera.translateX(-0.05f);
 						}
 					}
 					else {
 						if (e.jaxis.value < -15000) {
 							std::cout << "Run Left" << std::endl;
-							camera.translateX(0.1f);
 						}
 						else {
 							std::cout << "Walk Left" << std::endl;
-							camera.translateX(0.05f);
 						}
 					}
 				}
@@ -158,47 +215,38 @@ void Display::update(Camera& camera, Transform& trans1, Transform& trans2) {
 					if (e.jaxis.value > 0) {
 						if (e.jaxis.value > 15000) {
 							std::cout << "Run Backwards" << std::endl;
-							camera.translateZ(-0.1f);
 						}
 						else {
 							std::cout << "Walk Backwards" << std::endl;
-							camera.translateZ(-0.05f);
 						}
 					}
 					else {
 						if (e.jaxis.value < -15000) {
 							std::cout << "Run Forward" << std::endl;
-							camera.translateZ(0.1f);
 						}
 						else {
 							std::cout << "Walk Forward" << std::endl;
-							camera.translateZ(0.05f);
 						}
 					}
 				}
 				if (e.jaxis.axis == 2) {
 					std::cout << "Left-Trigger" << std::endl;
-					camera.translateY(0.1f);
 				}
 				if (e.jaxis.axis == 3) {
 					if (e.jaxis.value > 0) {
 						if (e.jaxis.value > 15000) {
 							std::cout << "Camera Fast to Right" << std::endl;
-							camera.rotateY(0.1f);
 						}
 						else {
 							std::cout << "Camera Slow to Right" << std::endl;
-							camera.rotateY(0.05f);
 						}
 					}
 					else {
 						if (e.jaxis.value < -15000) {
 							std::cout << "Camera Fast to Left" << std::endl;
-							camera.rotateY(-0.1f);
 						}
 						else {
 							std::cout << "Camera Slow to Left" << std::endl;
-							camera.rotateY(-0.05f);
 						}
 					}
 				}
@@ -206,27 +254,22 @@ void Display::update(Camera& camera, Transform& trans1, Transform& trans2) {
 					if (e.jaxis.value > 0) {
 						if (e.jaxis.value > 15000) {
 							std::cout << "Camera Fast Down" << std::endl;
-							camera.rotateX(-0.1f);
 						}
 						else {
 							std::cout << "Camera Slow Down" << std::endl;
-							camera.rotateX(-0.05f);
 						}
 					}
 					else {
 						if (e.jaxis.value < -15000) {
 							std::cout << "Camera Fast Up" << std::endl;
-							camera.rotateX(0.1f);
 						}
 						else {
 							std::cout << "Camera Slow Up" << std::endl;
-							camera.rotateX(0.05f);
 						}
 					}
 				}
 				if (e.jaxis.axis == 5) {
 					std::cout << "Right-Trigger" << std::endl;
-					camera.translateY(-0.1f);
 				}
 			}
 			break;
