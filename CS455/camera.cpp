@@ -9,6 +9,8 @@
 
 Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width, int height) {
 	this->position = position;
+	this->lookAt = lookAt;
+	this->up = up;
 
 	this->n = glm::normalize(position - lookAt); //Switch these if you find that you are coming in backwards
 	this->u = glm::normalize(glm::cross(up, n));
@@ -17,7 +19,7 @@ Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width,
 	this->rotate = glm::mat4(u.x, v.x, n.x, 0, u.y, v.y, n.y, 0, u.z, v.z, n.z, 0, 0, 0, 0, 1);
 	this->scale = glm::mat4(1.0);
 
-	this->fov = M_PI/3;
+	this->fov = (float)M_PI/3;
 	this->aspect = (float)width/(float)height;
 	this->zNear = 0.001f;
 	this->zFar = 1000.0f;
@@ -27,6 +29,7 @@ Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width,
 }
 
 glm::mat4 Camera::getViewProjection() const {
+	//return perspective * glm::lookAt(position, position - lookAt, up);
 	return perspective * worldToCamera();
 }
 
