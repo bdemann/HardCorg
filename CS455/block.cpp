@@ -2,7 +2,8 @@
 
 Block::Block(int x, int y) : GameObject(x, y)
 {
-	hp = 1;
+	this->destructable = true;
+	this->hp = 1;
 }
 
 Block::~Block()

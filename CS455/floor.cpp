@@ -4,6 +4,7 @@
 
 Floor::Floor(int x, int y) : GameObject(x, y)
 {
+	this->destructable = false;
 }
 
 

@@ -2,7 +2,8 @@
 
 Bomb::Bomb(int x, int y, int blastRadius) : GameObject(x, y)
 {
-	timer = 10;
+	this->destructable = true;
+	this->timer = 10;
 	this->blastRadius = blastRadius;
 }
 

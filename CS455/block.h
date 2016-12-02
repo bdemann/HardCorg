@@ -1,9 +1,8 @@
 #pragma once
-#include "destructable.h"
 #include "gameObject.h"
 #include <string>
 
-class Block : public GameObject, public Destructable
+class Block : public GameObject
 {
 public:
 	Block(int x, int y);

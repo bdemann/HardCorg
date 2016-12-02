@@ -1,11 +1,10 @@
 #pragma once
 #include "gameObject.h"
-#include "destructable.h"
 #include <string>
 
 enum class Direction {UP, DOWN, LEFT, RIGHT};
 
-class Corgi : public GameObject, public Destructable
+class Corgi : public GameObject
 {
 public:
 	Corgi(int x, int y);

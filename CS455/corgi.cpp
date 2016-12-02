@@ -4,6 +4,7 @@
 
 Corgi::Corgi(int x, int y) : GameObject(x, y)
 {
+	this->destructable = true;
 	this->dir = Direction::UP;
 	this->hp = 1;
 	this->blastRadius = 1;
