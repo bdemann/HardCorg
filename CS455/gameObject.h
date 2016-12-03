@@ -1,21 +1,34 @@
 #pragma once
 #include <string>
 #include "mesh.h"
+#include "texture.h"
 
 class GameObject
 {
 public:
-	GameObject(int x, int y);
+	GameObject(int x, int y, Mesh* mesh, Texture* texture);
 	~GameObject();
 
 	std::string toString();
-	int getX();
-	int getY();
+
+	int GameObject::getRow() {
+		return row;
+	}
+	int GameObject::getCol() {
+		return col;
+	}
+	Mesh* getMesh() {
+		return mesh;
+	}
+	Texture* getTexture() {
+		return texture;
+	}
 
 protected:
-	int x;
-	int y;
-	const Mesh* mesh;
+	int row;
+	int col;
+	Mesh* mesh;
+	Texture* texture;
 	bool destructable;
 };
 

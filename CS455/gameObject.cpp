@@ -1,8 +1,13 @@
 #include "gameObject.h"
 #include "mesh.h"
+#include "texture.h"
 
-GameObject::GameObject(int x, int y)
+GameObject::GameObject(int x, int y, Mesh* mesh, Texture* texture)
 {
+	this->row = x;
+	this->col = y;
+	this->mesh = mesh;
+	this->texture = texture;
 }
 
 GameObject::~GameObject()
@@ -12,14 +17,4 @@ GameObject::~GameObject()
 std::string GameObject::toString()
 {
 	return "%";
-}
-
-int GameObject::getX()
-{
-	return x;
-}
-
-int GameObject::getY()
-{
-	return y;
 }

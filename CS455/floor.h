@@ -5,7 +5,7 @@
 class Floor : public GameObject
 {
 public:
-	Floor(int x, int y);
+	Floor(int x, int y, Mesh* mesh, Texture* texture);
 	~Floor();
 
 	std::string toString();

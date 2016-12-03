@@ -27,6 +27,8 @@ int main() {
 	Display display(800, 600, "Project 3");
 
 	Shader shader("./res/shaders/basicShader");
+	Mesh ground("./res/obj/car.obj");
+	Texture textGround("./res/textures/ParkingLot.bmp");
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -34,7 +36,6 @@ int main() {
 			//transforms[row][col] = transform;
 			//std::string test = transforms[row][col].toString();
 			//std::cout << row << " " << col << " " << test << std::endl;
-			gameBoard[row][col].push_back(new Floor(row, col));
 		}
 	}
 	/*transforms[0][0] = Transform(glm::vec3(0, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(.5, .5, .5));
@@ -176,11 +177,9 @@ int main() {
 			transforms[row][col].getScale().z = 1;
 			//std::string test = transforms[row][col].toString();
 			//std::cout << row << " " << col << " " << test << std::endl;
-			gameBoard[row][col].push_back(new Floor(row, col));
+			gameBoard[row][col].push_back(new Floor(row, col, &ground, &textGround));
 		}
 	}
-	Mesh ground("./res/obj/car.obj");
-	Texture textGround("./res/textures/ParkingLot.bmp");
 	//Transform transGround(glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1.0, 1.0, 1.0));
 	Transform transGround(glm::vec3(5.2, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(1.0, 1.0, 1.0));
 
@@ -198,15 +197,9 @@ int main() {
 				std::vector<GameObject*> cell = gameBoard[row][col];
 				for (int i = 0; i < cell.size(); i++) {
 					GameObject* piece = cell.at(i);
-					//piece.bindTexture();
-					//shader.update(transforms[row][col], camera);
-					//piece.draw();
-					textGround.bind(0);
+					piece->getTexture()->bind(0);
 					shader.update(transforms[row][col], camera);
-					ground.draw();
-					//std::string test = (transforms[row][col]).toString();
-					//std::cout << row << " " << col << " " << test << std::endl;
-					//std::count << (*transforms[row][col]).toString();
+					piece->getMesh()->draw();
 				}
 			}
 		}

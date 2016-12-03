@@ -2,7 +2,7 @@
 
 
 
-Floor::Floor(int x, int y) : GameObject(x, y)
+Floor::Floor(int x, int y, Mesh* mesh, Texture* texture) : GameObject(x, y, mesh, texture)
 {
 	this->destructable = false;
 }
