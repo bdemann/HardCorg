@@ -16,9 +16,19 @@ Corgi::~Corgi()
 {
 }
 
-Direction Corgi::toString()
+std::string Corgi::toString()
 {
-	return dir;
+	switch (dir)
+	{
+	case Direction::UP:
+		return "U";
+	case Direction::DOWN:
+		return "D";
+	case Direction::LEFT:
+		return "L";;
+	case Direction::RIGHT:
+		return "R";
+	}
 }
 
 void Corgi::move(Direction dir)
@@ -43,16 +53,6 @@ void Corgi::move(Direction dir)
 
 void Corgi::turn(Direction dir) {
 	this->dir = dir;
-}
-
-void Corgi::hit()
-{
-	hp--;
-}
-
-bool Corgi::isDestroyed()
-{
-	return hp < 1;
 }
 
 void Corgi::setInfinite(bool infinite)

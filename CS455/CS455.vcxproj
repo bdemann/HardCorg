@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="bomb.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="corgi.cpp" />
     <ClCompile Include="display.cpp" />
@@ -161,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="bomb.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="corgi.h" />
     <ClInclude Include="display.h" />

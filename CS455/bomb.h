@@ -5,8 +5,16 @@
 class Bomb : public GameObject
 {
 public:
-	Bomb(int x, int y, int blastRadius);
+	Bomb(int x, int y, Mesh* mesh, Texture* texture, int blastRadius);
 	~Bomb();
+
+	void hit() {
+		timer = 0;
+	}
+
+	bool isDestroyed() {
+		return timer <= 0;
+	}
 
 	void decrementTimer();
 	int getTimer();

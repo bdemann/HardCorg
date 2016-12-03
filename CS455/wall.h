@@ -5,5 +5,9 @@ class Wall : public GameObject
 public:
 	Wall(int x, int y, Mesh* mesh, Texture* texture);
 	~Wall();
+
+	std::string toString() {
+		return "W";
+	}
 };
 

@@ -9,7 +9,7 @@ public:
 	GameObject(int x, int y, Mesh* mesh, Texture* texture);
 	~GameObject();
 
-	std::string toString();
+	virtual std::string toString();
 
 	int GameObject::getRow() {
 		return row;
@@ -33,6 +33,16 @@ public:
 	bool isDestructable() {
 		return destructable;
 	}
+	virtual void hit() {
+		if (destructable) {
+			hp--;
+		} else {
+			hp = 1;
+		}
+	}
+	virtual bool isDestroyed() {
+		return hp < 1 && isDestructable();
+	}
 
 protected:
 	int row;
@@ -41,5 +51,6 @@ protected:
 	Texture* texture;
 	bool destructable;
 	bool impassable;
+	int hp;
 };
 

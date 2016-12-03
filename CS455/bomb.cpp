@@ -1,9 +1,10 @@
 #include "bomb.h"
 
-Bomb::Bomb(int x, int y, int blastRadius) : GameObject(x, y)
+Bomb::Bomb(int x, int y, Mesh* mesh, Texture* texture, int blastRadius) : GameObject(x, y, mesh, texture)
 {
 	this->destructable = true;
-	this->timer = 10;
+	this->impassable = true;
+	this->timer = 5;
 	this->blastRadius = blastRadius;
 }
 

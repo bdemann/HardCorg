@@ -54,6 +54,9 @@
     <ClCompile Include="corgi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bomb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="display.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="corgi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bomb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

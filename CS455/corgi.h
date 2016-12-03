@@ -10,11 +10,9 @@ public:
 	Corgi(int x, int y, Mesh* mesh, Texture* texture);
 	~Corgi();
 
-	Direction toString();
+	std::string toString();
 	void move(Direction dir);
 	void turn(Direction dir);
-	void hit();
-	bool isDestroyed();
 	void setInfinite(bool infinite);
 	int getBlastRadius();
 	void setBlastRadius(int blastRadius);

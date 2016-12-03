@@ -8,6 +8,8 @@
 #include "wall.h"
 #include "block.h"
 #include "corgi.h"
+#include "bomb.h"
+
 
 #include "display.h"
 #include "camera.h"
@@ -32,21 +34,35 @@ std::vector<GameObject*> gameBoard[ROWS][COLS];
 Transform transforms[ROWS][COLS];
 int nums[ROWS][COLS];
 std::vector<Corgi> corgis;
+std::vector<Bomb*> bombs;
+
+Mesh* ground;
+Mesh* block;
+
+Texture* textGround;
+Texture* textWall;
+Texture* textBlock;
+Texture* textTire;
+Texture* textBomb;
+
+bool isExploded(std::vector<GameObject*>* cell);
 
 int main() {
 	Display display(WIDTH, HEIGHT, "Project 3");
 
 	float x = (ROWS * UNIT_WIDTH / 2) - UNIT_WIDTH / 2;
 	float z = COLS * UNIT_HEIGHT / 2;
-
 	Camera camera(glm::vec3(x, 20, z + 5), glm::vec3(x, 0, z), glm::vec3(0, 1, 0), WIDTH, HEIGHT);
 	Shader shader("./res/shaders/basicShader");
-	Mesh ground("./res/obj/car.obj");
-	Mesh block("./res/obj/monkey.obj");
-	Texture textGround("./res/textures/ParkingLot.bmp");
-	Texture textWall("./res/textures/car.bmp");
-	Texture textBlock("./res/textures/crayon.jpg");
-	Texture textTire("./res/textures/tire.bmp");
+
+	ground = new Mesh("./res/obj/car.obj");
+	block = new Mesh("./res/obj/monkey.obj");
+	textGround = new Texture("./res/textures/ParkingLot.bmp");
+	textWall = new Texture("./res/textures/car.bmp");
+	textBlock = new Texture("./res/textures/crayon.jpg");
+	textTire = new Texture("./res/textures/tire.bmp");
+	textBomb = new Texture("./res/textures/tire.bmp");
+
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -206,8 +222,8 @@ int main() {
 
 	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
 
-	corgis.push_back(Corgi(1, 1, &block, &textWall));
-	corgis.push_back(Corgi(ROWS - 2, COLS - 2, &block, &textTire));
+	corgis.push_back(Corgi(1, 1, block, textWall));
+	corgis.push_back(Corgi(ROWS - 2, COLS - 2, block, textTire));
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -219,9 +235,9 @@ int main() {
 			transforms[row][col].getScale().z = 1;
 
 			//Add Walls and floor
-			GameObject* piece = new Floor(row, col, &ground, &textGround);
+			GameObject* piece = new Floor(row, col, ground, textGround);
 			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
-				piece = new Wall(row, col, &ground, &textWall);
+				piece = new Wall(row, col, ground, textWall);
 			}
 
 			gameBoard[row][col].push_back(piece);
@@ -246,12 +262,14 @@ int main() {
 			}
 
 			//It after all that checking we must be on a valid block so we can randomly put down a block.
-			Block* b = Block::create(row, col, &block, &textBlock, BLOCK_DENSITY);
+			Block* b = Block::create(row, col, block, textBlock, BLOCK_DENSITY);
 			if (b != NULL) {
 				gameBoard[row][col].push_back(b);
 			}
 		}
 	}
+
+	unsigned int timer = 0;
 
 	while (!display.isClosed()) {
 		display.clear(0.0f, 0.0f, 0.0f, 0);
@@ -263,26 +281,82 @@ int main() {
 				std::vector<GameObject*> cell = gameBoard[row][col];
 				for (unsigned int i = 0; i < cell.size(); i++) {
 					GameObject* piece = cell.at(i);
-					piece->getTexture()->bind(0);
-					Transform trans = transforms[row][col];
-					trans.getRotation().y = piece->getRotation();
-					shader.update(trans, camera);
-					piece->getMesh()->draw();
+					if (!piece->isDestroyed()) {
+						piece->getTexture()->bind(0);
+						Transform trans = transforms[row][col];
+						trans.getRotation().y = piece->getRotation();
+						shader.update(trans, camera);
+						piece->getMesh()->draw();
+					}
 				}
 			}
 		}
 		for (Corgi c : corgis) {
-			c.getTexture()->bind(0);
-			Transform trans = transforms[c.getRow()][c.getCol()];
-			trans.getRotation().y = c.getRotation();
-			shader.update(trans, camera);
-			c.getMesh()->draw();
+			if (!c.isDestroyed()) {
+				c.getTexture()->bind(0);
+				Transform trans = transforms[c.getRow()][c.getCol()];
+				trans.getRotation().y = c.getRotation();
+				shader.update(trans, camera);
+				c.getMesh()->draw();
+			}
+		}
+		for (Bomb* b : bombs) {
+			if (timer % 75 == 0 && !b->isDestroyed()) {
+				std::cout << "Tick " << b->getTimer() << std::endl;
+				b->decrementTimer();
+				if (b->getTimer() == 0) {
+					std::cout << "Boom" << std::endl;
+					int blastRadius = b->getBlastRadius();
+					int row = b->getRow();
+					int col = b->getCol();
+					//TODO turns out if you stand on top of the bomb you will be perfectly safe... Which brings up this interesting thing. What do we do when two things occupy the same location? In this version we have each thing that keeps track of it's own position so it works out kind of... unless we need to do this or maybe picking up items may have a similar problem.
+					for (GameObject* go : gameBoard[row][col]) {
+						go->hit();
+					}
+					bool contUp = true;
+					bool contDown = true;
+					bool contRight = true;
+					bool contLeft = true;
+					for (int j = 1; j < blastRadius + 1; j++) {
+						if (contUp && !isExploded(&gameBoard[row + j][col])) {
+							contUp = false;
+						}
+						if (contDown && !isExploded(&gameBoard[row - j][col])) {
+							contDown = false;
+						}
+						if (contRight && !isExploded(&gameBoard[row][col + j])) {
+							contRight = false;
+						}
+						if (contLeft && !isExploded(&gameBoard[row][col - j])) {
+							contLeft = false;
+						}
+					}
+				}
+			}
+			if (!b->isDestroyed()) {
+				b->getTexture()->bind(0);
+				Transform trans = transforms[b->getRow()][b->getCol()];
+				shader.update(trans, camera);
+				b->getMesh()->draw();
+			}
 		}
 
 		display.update(camera);
+		timer++;
 	}
 
 	return 0;
+}
+
+bool isExploded(std::vector<GameObject*>* cell) {
+	bool cont = true;
+	for (GameObject* go : (*cell)) {
+		go->hit();
+		if (go->isImpassable()) {
+			cont = false;
+		}
+	}
+	return cont;
 }
 
 Display::Display(int width, int height, const std::string& title) {
@@ -339,7 +413,7 @@ Display::~Display() {
 
 bool passable(std::vector<GameObject*> objs) {
 	for (GameObject* obj : objs) {
-		if (obj->isImpassable()) {
+		if (obj->isImpassable() && !obj->isDestroyed()) {
 			return false;
 		}
 	}
@@ -359,7 +433,6 @@ void Display::update(Camera& camera) {
 		case SDL_KEYDOWN:
 			//Start Corgi movement events
 			if (corgis.size() > 0) {
-				printf("We have at least one player\n");
 				Corgi* corgi = &corgis.at(0);
 				int row = corgi->getRow();
 				int col = corgi->getCol();
@@ -398,7 +471,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					printf("Player 1 put down a bomb!\n");
+					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -442,7 +515,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_e:
-					printf("Player 2 put down a bomb!\n");
+					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -486,7 +559,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_o:
-					printf("Player 3 put down a bomb!\n");
+					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -530,14 +603,11 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					printf("Player 4 put down a bomb!\n");
+					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
 			//End Corgi movement events
-			switch (e.key.keysym.sym) {
-				
-			}
 			break;
 		case SDL_JOYAXISMOTION:
 			if ((e.jaxis.value < -3200) || (e.jaxis.value > 3200)) {

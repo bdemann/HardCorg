@@ -9,8 +9,6 @@ public:
 	Block(int x, int y, Mesh* mesh, Texture* texture);
 	~Block();
 
-	void hit();
-	bool isDestroyed();
 	std::string toString();
 	static Block* create(int row, int col, Mesh* mesh, Texture* texture, int blockDensity) {
 		int num = rand();

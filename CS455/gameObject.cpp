@@ -8,6 +8,7 @@ GameObject::GameObject(int x, int y, Mesh* mesh, Texture* texture)
 	this->col = y;
 	this->mesh = mesh;
 	this->texture = texture;
+	hp = 1;
 }
 
 GameObject::~GameObject()
