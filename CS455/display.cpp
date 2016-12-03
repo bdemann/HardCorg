@@ -5,6 +5,8 @@
 
 #include "gameObject.h"
 #include "floor.h"
+#include "wall.h"
+#include "block.h"
 
 #include "display.h"
 #include "camera.h"
@@ -14,10 +16,11 @@
 #include "texture.h"
 #include "simpleCamera.h"
 
-#define ROWS 10
-#define COLS 10
+#define ROWS 11
+#define COLS 11
 #define UNIT_WIDTH 2
 #define UNIT_HEIGHT 2
+#define BLOCK_DENSITY 2
 
 std::vector<GameObject*> gameBoard[ROWS][COLS];
 Transform transforms[ROWS][COLS];
@@ -26,9 +29,14 @@ int nums[ROWS][COLS];
 int main() {
 	Display display(800, 600, "Project 3");
 
+
+	Camera camera(glm::vec3(0, 30, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 800, 600);
 	Shader shader("./res/shaders/basicShader");
 	Mesh ground("./res/obj/car.obj");
+	Mesh block("./res/obj/monkey.obj");
 	Texture textGround("./res/textures/ParkingLot.bmp");
+	Texture textWall("./res/textures/car.bmp");
+	Texture textBlock("./res/textures/crayon.jpg");
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -64,6 +72,7 @@ int main() {
 	Transform t07 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t08 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t09 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t0a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t10 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t11 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -75,6 +84,7 @@ int main() {
 	Transform t17 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t18 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t19 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t1a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t20 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t21 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -86,6 +96,7 @@ int main() {
 	Transform t27 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t28 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t29 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t2a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t30 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t31 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -97,6 +108,7 @@ int main() {
 	Transform t37 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t38 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t39 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t3a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t40 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t41 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -108,6 +120,7 @@ int main() {
 	Transform t47 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t48 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t49 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t4a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t50 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t51 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -119,6 +132,7 @@ int main() {
 	Transform t57 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t58 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t59 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t5a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t60 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t61 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -130,6 +144,7 @@ int main() {
 	Transform t67 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t68 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t69 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t6a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t70 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t71 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -141,6 +156,7 @@ int main() {
 	Transform t77 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t78 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t79 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t7a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t80 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t81 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -152,6 +168,7 @@ int main() {
 	Transform t87 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t88 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t89 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t8a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 	Transform t90 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t91 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
@@ -163,28 +180,69 @@ int main() {
 	Transform t97 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t98 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform t99 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform t9a = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+
+	Transform ta0 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta1 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta2 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta3 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta4 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta5 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta6 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta7 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta8 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform ta9 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
+	Transform taa = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
 
-	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19 },{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29 },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39 },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49 },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59 },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69 },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79 },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89 },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99 }, };
+	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
-			//Transform transform = Transform(glm::vec3(row, -1, col), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(.5, .5, .5));
 			transforms[row][col].getPosition().x = row * UNIT_WIDTH;
 			transforms[row][col].getPosition().z = col * UNIT_HEIGHT;
 
 			transforms[row][col].getScale().x = 1;
 			transforms[row][col].getScale().y = 1;
 			transforms[row][col].getScale().z = 1;
-			//std::string test = transforms[row][col].toString();
-			//std::cout << row << " " << col << " " << test << std::endl;
-			gameBoard[row][col].push_back(new Floor(row, col, &ground, &textGround));
+
+			//Add Walls and floor
+			GameObject* piece = new Floor(row, col, &ground, &textGround);
+			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
+				piece = new Wall(row, col, &ground, &textWall);
+			}
+
+			gameBoard[row][col].push_back(piece);
+
+			//Add Blocks
+			//Don't put a block on top of the walls
+			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
+				continue;
+			}
+			//Keep a small pad around the players free from blocks so they aren't trapped from the beginnging.
+			if ((row == 1 && col == 1) || (row == 2 && col == 1) || (row == 1 && col == 2)) {
+				continue;
+			}
+			if ((row == 1 && col == COLS - 2) || (row == 2 && col == COLS - 2) || (row == 1 && col == COLS - 3)) {
+				continue;
+			}
+			if ((row == ROWS - 2 && col == 1) || (row == ROWS - 3 && col == 1) || (row == ROWS - 2 && col == 2)) {
+				continue;
+			}
+			if ((row == ROWS - 2 && col == COLS - 2) || (row == ROWS - 3 && col == COLS - 2) || (row == ROWS - 2 && col == COLS - 3)) {
+				continue;
+			}
+
+			//It after all that checking we must be on a valid block so we can randomly put down a block.
+			Block* b = Block::create(row, col, &block, &textBlock, BLOCK_DENSITY);
+			if (b != NULL) {
+				gameBoard[row][col].push_back(b);
+				printf("We added one");
+			}
+			else {
+				printf("We didn't add one");
+			}
 		}
 	}
-	//Transform transGround(glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1.0, 1.0, 1.0));
-	Transform transGround(glm::vec3(5.2, -1, 0), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(1.0, 1.0, 1.0));
-
-	Camera camera(glm::vec3(0, 30, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 800, 600);
-
 
 
 	while (!display.isClosed()) {

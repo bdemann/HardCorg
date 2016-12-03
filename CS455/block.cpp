@@ -1,6 +1,6 @@
 #include "block.h"
 
-Block::Block(int x, int y) : GameObject(x, y)
+Block::Block(int x, int y, Mesh* mesh, Texture* texture) : GameObject(x, y, mesh, texture)
 {
 	this->destructable = true;
 	this->hp = 1;

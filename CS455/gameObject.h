@@ -30,5 +30,6 @@ protected:
 	Mesh* mesh;
 	Texture* texture;
 	bool destructable;
+	bool impassable;
 };
 
