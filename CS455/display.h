@@ -14,7 +14,7 @@ public:
 	Display(int width, int height, const std::string& title);
 
 	void clear(float r, float g, float b, float a);
-	void update();
+	void update(Camera& camera);
 	bool isClosed();
 
 	virtual ~Display();

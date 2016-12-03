@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <glm/glm.hpp>j
+#include <string>
 
 class Transform
 {
@@ -26,9 +27,19 @@ public:
 	void rotate(float amt) {
 		rotation.y += amt;
 	}*/
+	std::string toString() {
+		std::string x = std::to_string(position.x);
+		std::string z = std::to_string(position.z);
+		return x + " and " + z;
+	}
+
+	void operator = (const Transform& other) {
+		position = other.position;
+		rotation = other.rotation;
+		scale = other.scale;
+	}
 private:
 	//Transform(const Transform& other) {}
-	void operator = (const Transform& other) {}
 
 	glm::vec3& position;
 	glm::vec3& rotation;

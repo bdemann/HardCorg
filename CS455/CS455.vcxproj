@@ -147,7 +147,8 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="display.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="floor.cpp" />
+    <ClCompile Include="gameObject.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="obj_loader.cpp" />
@@ -159,6 +160,8 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="display.h" />
+    <ClInclude Include="floor.h" />
+    <ClInclude Include="gameObject.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="obj_loader.h" />

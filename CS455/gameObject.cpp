@@ -1,4 +1,5 @@
 #include "gameObject.h"
+#include "mesh.h"
 
 GameObject::GameObject(int x, int y)
 {

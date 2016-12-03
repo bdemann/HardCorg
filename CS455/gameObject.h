@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "mesh.h"
 
 class GameObject
 {
@@ -14,6 +15,7 @@ public:
 protected:
 	int x;
 	int y;
+	const Mesh* mesh;
 	bool destructable;
 };
 
