@@ -17,6 +17,11 @@
 #include "texture.h"
 #include "simpleCamera.h"
 
+//#define WIDTH 1280
+//#define HEIGHT 720
+#define WIDTH 1280
+#define HEIGHT 600
+
 #define ROWS 11
 #define COLS 11
 #define UNIT_WIDTH 2
@@ -29,16 +34,19 @@ int nums[ROWS][COLS];
 std::vector<Corgi> corgis;
 
 int main() {
-	Display display(800, 600, "Project 3");
+	Display display(WIDTH, HEIGHT, "Project 3");
 
+	float x = (ROWS * UNIT_WIDTH / 2) - UNIT_WIDTH / 2;
+	float z = COLS * UNIT_HEIGHT / 2;
 
-	Camera camera(glm::vec3(0, 30, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 800, 600);
+	Camera camera(glm::vec3(x, 20, z + 5), glm::vec3(x, 0, z), glm::vec3(0, 1, 0), WIDTH, HEIGHT);
 	Shader shader("./res/shaders/basicShader");
 	Mesh ground("./res/obj/car.obj");
 	Mesh block("./res/obj/monkey.obj");
 	Texture textGround("./res/textures/ParkingLot.bmp");
 	Texture textWall("./res/textures/car.bmp");
 	Texture textBlock("./res/textures/crayon.jpg");
+	Texture textTire("./res/textures/tire.bmp");
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -199,11 +207,12 @@ int main() {
 	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
 
 	corgis.push_back(Corgi(1, 1, &block, &textWall));
+	corgis.push_back(Corgi(ROWS - 2, COLS - 2, &block, &textTire));
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
-			transforms[row][col].getPosition().x = (float)row * UNIT_WIDTH;
-			transforms[row][col].getPosition().z = (float)col * UNIT_HEIGHT;
+			transforms[row][col].getPosition().z = (float)row * UNIT_WIDTH;
+			transforms[row][col].getPosition().x = (float)col * UNIT_HEIGHT;
 
 			transforms[row][col].getScale().x = 1;
 			transforms[row][col].getScale().y = 1;
@@ -240,10 +249,6 @@ int main() {
 			Block* b = Block::create(row, col, &block, &textBlock, BLOCK_DENSITY);
 			if (b != NULL) {
 				gameBoard[row][col].push_back(b);
-				printf("We added one");
-			}
-			else {
-				printf("We didn't add one");
 			}
 		}
 	}
@@ -332,72 +337,206 @@ Display::~Display() {
 	SDL_Quit();
 }
 
+bool passable(std::vector<GameObject*> objs) {
+	for (GameObject* obj : objs) {
+		if (obj->isImpassable()) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void Display::update(Camera& camera) {
 	SDL_GL_SwapWindow(m_window);
 
 	SDL_Event e;
 
 	while (SDL_PollEvent(&e)) {
-		std::string direction;
-
 		switch (e.type) {
 		case SDL_QUIT:
 			closed = true;
 			break;
 		case SDL_KEYDOWN:
+			//Start Corgi movement events
+			if (corgis.size() > 0) {
+				printf("We have at least one player\n");
+				Corgi* corgi = &corgis.at(0);
+				int row = corgi->getRow();
+				int col = corgi->getCol();
+
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:
+					if (passable(gameBoard[row - 1][col])) {
+						corgi->move(Direction::UP);
+					}
+					else {
+						corgis.at(0).turn(Direction::UP);
+					}
+					break;
+				case SDLK_LEFT:
+					if (passable(gameBoard[row][col - 1])) {
+						corgi->move(Direction::LEFT);
+					}
+					else {
+						corgi->turn(Direction::LEFT);
+					}
+					break;
+				case SDLK_DOWN:
+					if (passable(gameBoard[row + 1][col])) {
+						corgi->move(Direction::DOWN);
+					}
+					else {
+						corgi->turn(Direction::DOWN);
+					}
+					break;
+				case SDLK_RIGHT:
+					if (passable(gameBoard[row][col + 1])) {
+						corgi->move(Direction::RIGHT);
+					}
+					else {
+						corgi->turn(Direction::RIGHT);
+					}
+					break;
+				case SDLK_SPACE:
+					printf("Player 1 put down a bomb!\n");
+					break;
+				}
+			}
+
+			if (corgis.size() > 1) {
+				Corgi* corgi = &corgis.at(1);
+				int row = corgi->getRow();
+				int col = corgi->getCol();
+
+				switch (e.key.keysym.sym) {
+				case SDLK_w:
+					if (passable(gameBoard[row - 1][col])) {
+						corgi->move(Direction::UP);
+					}
+					else {
+						corgi->turn(Direction::UP);
+					}
+					break;
+				case SDLK_a:
+					if (passable(gameBoard[row][col - 1])) {
+						corgi->move(Direction::LEFT);
+					}
+					else {
+						corgi->turn(Direction::LEFT);
+					}
+					break;
+				case SDLK_s:
+					if (passable(gameBoard[row + 1][col])) {
+						corgi->move(Direction::DOWN);
+					}
+					else {
+						corgi->turn(Direction::DOWN);
+					}
+					break;
+				case SDLK_d:
+					if (passable(gameBoard[row][col + 1])) {
+						corgi->move(Direction::RIGHT);
+					}
+					else {
+						corgi->turn(Direction::RIGHT);
+					}
+					break;
+				case SDLK_e:
+					printf("Player 2 put down a bomb!\n");
+					break;
+				}
+			}
+
+			if (corgis.size() > 2) {
+				Corgi* corgi = &corgis.at(2);
+				int row = corgi->getRow();
+				int col = corgi->getCol();
+
+				switch (e.key.keysym.sym) {
+				case SDLK_i:
+					if (passable(gameBoard[row - 1][col])) {
+						corgi->move(Direction::UP);
+					}
+					else {
+						corgi->turn(Direction::UP);
+					}
+					break;
+				case SDLK_j:
+					if (passable(gameBoard[row][col - 1])) {
+						corgi->move(Direction::LEFT);
+					}
+					else {
+						corgi->turn(Direction::LEFT);
+					}
+					break;
+				case SDLK_k:
+					if (passable(gameBoard[row + 1][col])) {
+						corgi->move(Direction::DOWN);
+					}
+					else {
+						corgi->turn(Direction::DOWN);
+					}
+					break;
+				case SDLK_l:
+					if (passable(gameBoard[row][col + 1])) {
+						corgi->move(Direction::RIGHT);
+					}
+					else {
+						corgi->turn(Direction::RIGHT);
+					}
+					break;
+				case SDLK_o:
+					printf("Player 3 put down a bomb!\n");
+					break;
+				}
+			}
+
+			if (corgis.size() > 3) {
+				Corgi* corgi = &corgis.at(3);
+				int row = corgi->getRow();
+				int col = corgi->getCol();
+
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:
+					if (passable(gameBoard[row - 1][col])) {
+						corgi->move(Direction::UP);
+					}
+					else {
+						corgi->turn(Direction::UP);
+					}
+					break;
+				case SDLK_LEFT:
+					if (passable(gameBoard[row][col - 1])) {
+						corgi->move(Direction::LEFT);
+					}
+					else {
+						corgi->turn(Direction::LEFT);
+					}
+					break;
+				case SDLK_DOWN:
+					if (passable(gameBoard[row + 1][col])) {
+						corgi->move(Direction::DOWN);
+					}
+					else {
+						corgi->turn(Direction::DOWN);
+					}
+					break;
+				case SDLK_RIGHT:
+					if (passable(gameBoard[row][col + 1])) {
+						corgi->move(Direction::RIGHT);
+					}
+					else {
+						corgi->turn(Direction::RIGHT);
+					}
+					break;
+				case SDLK_SPACE:
+					printf("Player 4 put down a bomb!\n");
+					break;
+				}
+			}
+			//End Corgi movement events
 			switch (e.key.keysym.sym) {
-			case SDLK_w:
-				direction = "forward";
-				camera.translateZ(1);
-				break;
-			case SDLK_s:
-				direction = "back";
-				camera.translateZ(-1);
-				break;
-			case SDLK_a:
-				direction = "left";
-				camera.translateX(-1);
-				break;
-			case SDLK_d:
-				direction = "right";
-				camera.translateX(1);
-				break;
-			case SDLK_r:
-				direction = "up";
-				camera.translateY(-1);
-				break;
-			case SDLK_f:
-				direction = "down";
-				camera.translateY(1);
-				break;
-			case SDLK_i:
-				direction = "camera up";
-				break;
-			case SDLK_k:
-				direction = "camera down";
-				break;
-			case SDLK_l:
-				direction = "camera right";
-				break;
-			case SDLK_j:
-				direction = "camera left";
-				break;
-			case SDLK_y:
-				direction = "camera right";
-				break;
-			case SDLK_h:
-				direction = "camera left";
-				break;
-			case SDLK_RIGHT: 
-				corgis.at(0).move(Direction::RIGHT);
-				printf("%f", corgis.at(0).getRotation());
-				break;
-			case SDLK_LEFT:
-				corgis.at(0).move(Direction::LEFT);
-				break;
-			default:
-				direction = "null";
-				break;
+				
 			}
 			break;
 		case SDL_JOYAXISMOTION:

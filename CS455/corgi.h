@@ -12,6 +12,7 @@ public:
 
 	Direction toString();
 	void move(Direction dir);
+	void turn(Direction dir);
 	void hit();
 	bool isDestroyed();
 	void setInfinite(bool infinite);

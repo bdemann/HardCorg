@@ -41,6 +41,10 @@ void Corgi::move(Direction dir)
 	this->dir = dir;
 }
 
+void Corgi::turn(Direction dir) {
+	this->dir = dir;
+}
+
 void Corgi::hit()
 {
 	hp--;
@@ -70,12 +74,12 @@ float Corgi::getRotation() {
 	switch (dir)
 	{
 	case Direction::UP:
-		return 3.14159 * 0;
+		return (float)(3.14159 * 1);
 	case Direction::DOWN:
-		return 3.14159 / 2;
+		return (float)(3.14159 * 0);
 	case Direction::LEFT:
-		return 3.14159 * 3 / 2;
+		return (float)(3.14159 * 3 / 2);
 	case Direction::RIGHT:
-		return 3.14159 * 1;
+		return (float)(3.14159 / 2);
 	}
 }

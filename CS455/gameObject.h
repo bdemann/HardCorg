@@ -27,6 +27,13 @@ public:
 		return 0;
 	}
 
+	bool isImpassable() {
+		return impassable;
+	}
+	bool isDestructable() {
+		return destructable;
+	}
+
 protected:
 	int row;
 	int col;
