@@ -2,7 +2,7 @@
 
 
 
-Corgi::Corgi(int x, int y) : GameObject(x, y)
+Corgi::Corgi(int x, int y, Mesh* mesh, Texture* texture) : GameObject(x, y, mesh, texture)
 {
 	this->destructable = true;
 	this->dir = Direction::UP;
@@ -26,16 +26,16 @@ void Corgi::move(Direction dir)
 	switch (dir)
 	{
 	case Direction::UP:
-		x--;
+		row--;
 		break;
 	case Direction::DOWN:
-		x++;
+		row++;
 		break;
 	case Direction::LEFT:
-		y--;
+		col--;
 		break;
 	case Direction::RIGHT:
-		y++;
+		col++;
 		break;
 	}
 	this->dir = dir;
@@ -64,4 +64,18 @@ int Corgi::getBlastRadius()
 void Corgi::setBlastRadius(int blastRadius)
 {
 	this->blastRadius = blastRadius;
+}
+
+float Corgi::getRotation() {
+	switch (dir)
+	{
+	case Direction::UP:
+		return 3.14159 * 0;
+	case Direction::DOWN:
+		return 3.14159 / 2;
+	case Direction::LEFT:
+		return 3.14159 * 3 / 2;
+	case Direction::RIGHT:
+		return 3.14159 * 1;
+	}
 }

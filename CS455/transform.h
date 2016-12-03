@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>j
+#include <glm/glm.hpp>
 #include <string>
 
 class Transform

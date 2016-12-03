@@ -23,6 +23,9 @@ public:
 	Texture* getTexture() {
 		return texture;
 	}
+	float getRotation() {
+		return 0;
+	}
 
 protected:
 	int row;

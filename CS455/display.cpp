@@ -7,6 +7,7 @@
 #include "floor.h"
 #include "wall.h"
 #include "block.h"
+#include "corgi.h"
 
 #include "display.h"
 #include "camera.h"
@@ -25,6 +26,7 @@
 std::vector<GameObject*> gameBoard[ROWS][COLS];
 Transform transforms[ROWS][COLS];
 int nums[ROWS][COLS];
+std::vector<Corgi> corgis;
 
 int main() {
 	Display display(800, 600, "Project 3");
@@ -194,12 +196,14 @@ int main() {
 	Transform ta9 = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 	Transform taa = Transform(glm::vec3(), glm::vec3(), glm::vec3());
 
-
 	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
+
+	corgis.push_back(Corgi(1, 1, &block, &textWall));
+
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
-			transforms[row][col].getPosition().x = row * UNIT_WIDTH;
-			transforms[row][col].getPosition().z = col * UNIT_HEIGHT;
+			transforms[row][col].getPosition().x = (float)row * UNIT_WIDTH;
+			transforms[row][col].getPosition().z = (float)col * UNIT_HEIGHT;
 
 			transforms[row][col].getScale().x = 1;
 			transforms[row][col].getScale().y = 1;
@@ -244,7 +248,6 @@ int main() {
 		}
 	}
 
-
 	while (!display.isClosed()) {
 		display.clear(0.0f, 0.0f, 0.0f, 0);
 
@@ -253,13 +256,22 @@ int main() {
 		for (int row = 0; row < ROWS; row++) {
 			for (int col = 0; col < COLS; col++) {
 				std::vector<GameObject*> cell = gameBoard[row][col];
-				for (int i = 0; i < cell.size(); i++) {
+				for (unsigned int i = 0; i < cell.size(); i++) {
 					GameObject* piece = cell.at(i);
 					piece->getTexture()->bind(0);
-					shader.update(transforms[row][col], camera);
+					Transform trans = transforms[row][col];
+					trans.getRotation().y = piece->getRotation();
+					shader.update(trans, camera);
 					piece->getMesh()->draw();
 				}
 			}
+		}
+		for (Corgi c : corgis) {
+			c.getTexture()->bind(0);
+			Transform trans = transforms[c.getRow()][c.getCol()];
+			trans.getRotation().y = c.getRotation();
+			shader.update(trans, camera);
+			c.getMesh()->draw();
 		}
 
 		display.update(camera);
@@ -376,9 +388,12 @@ void Display::update(Camera& camera) {
 			case SDLK_h:
 				direction = "camera left";
 				break;
-			case SDLK_RIGHT:
+			case SDLK_RIGHT: 
+				corgis.at(0).move(Direction::RIGHT);
+				printf("%f", corgis.at(0).getRotation());
 				break;
 			case SDLK_LEFT:
+				corgis.at(0).move(Direction::LEFT);
 				break;
 			default:
 				direction = "null";

@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="block.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="corgi.cpp" />
     <ClCompile Include="display.cpp" />
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="gameObject.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="block.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="corgi.h" />
     <ClInclude Include="display.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="gameObject.h" />
