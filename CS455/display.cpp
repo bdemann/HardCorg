@@ -38,11 +38,14 @@ std::vector<Bomb*> bombs;
 
 Mesh* ground;
 Mesh* block;
+Mesh* bomb;
+Mesh* corgi;
 
 Texture* textGround;
 Texture* textWall;
 Texture* textBlock;
-Texture* textTire;
+Texture* textCorgi1;
+Texture* textCorgi2;
 Texture* textBomb;
 
 bool isExploded(std::vector<GameObject*>* cell);
@@ -55,13 +58,17 @@ int main() {
 	Camera camera(glm::vec3(x, 20, z + 5), glm::vec3(x, 0, z), glm::vec3(0, 1, 0), WIDTH, HEIGHT);
 	Shader shader("./res/shaders/basicShader");
 
-	ground = new Mesh("./res/obj/car.obj");
-	block = new Mesh("./res/obj/monkey.obj");
-	textGround = new Texture("./res/textures/ParkingLot.bmp");
-	textWall = new Texture("./res/textures/car.bmp");
-	textBlock = new Texture("./res/textures/crayon.jpg");
-	textTire = new Texture("./res/textures/tire.bmp");
-	textBomb = new Texture("./res/textures/tire.bmp");
+	ground = new Mesh("./res/obj/floor.obj");
+	block = new Mesh("./res/obj/block.obj");
+	bomb = new Mesh("./res/obj/bomb.obj");
+	corgi = new Mesh("./res/obj/monkey.obj");
+
+	textGround = new Texture("./res/textures/floorTexture.bmp");
+	textWall = new Texture("./res/textures/wallTexture.png");
+	textBlock = new Texture("./res/textures/blockTexture.png");
+	textCorgi1 = new Texture("./res/textures/car.bmp");
+	textCorgi2 = new Texture("./res/textures/tire.bmp");
+	textBomb = new Texture("./res/textures/bombTexture.png");
 
 
 	for (int row = 0; row < ROWS; row++) {
@@ -222,22 +229,22 @@ int main() {
 
 	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
 
-	corgis.push_back(Corgi(1, 1, block, textWall));
-	corgis.push_back(Corgi(ROWS - 2, COLS - 2, block, textTire));
+	corgis.push_back(Corgi(1, 1, corgi, textCorgi1));
+	corgis.push_back(Corgi(ROWS - 2, COLS - 2, corgi, textCorgi2));
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
 			transforms[row][col].getPosition().z = (float)row * UNIT_WIDTH;
 			transforms[row][col].getPosition().x = (float)col * UNIT_HEIGHT;
 
-			transforms[row][col].getScale().x = 1;
-			transforms[row][col].getScale().y = 1;
+			transforms[row][col].getScale().x = .5;
+			transforms[row][col].getScale().y = .75;
 			transforms[row][col].getScale().z = 1;
 
 			//Add Walls and floor
 			GameObject* piece = new Floor(row, col, ground, textGround);
 			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
-				piece = new Wall(row, col, ground, textWall);
+				piece = new Wall(row, col, block, textWall);
 			}
 
 			gameBoard[row][col].push_back(piece);
@@ -471,7 +478,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -515,7 +522,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_e:
-					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -559,7 +566,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_o:
-					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -603,7 +610,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					bombs.push_back(new Bomb(row, col, block, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
 					break;
 				}
 			}
