@@ -24,7 +24,6 @@ Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width,
 	this->zNear = 0.001f;
 	this->zFar = 1000.0f;
 
-	this->perspective = clip();
 	this->perspective = glm::perspective(fov, 1.0f, zNear, zFar);
 }
 
@@ -47,21 +46,6 @@ glm::mat4 Camera::translateCamera() const {
 
 glm::mat4 Camera::worldToCamera() const {
 	return scale * rotateCamera() * translateCamera();
-}
-
-glm::mat4 Camera::clip() const {
-	float zoom = 1/tan(fov/2);		//Also what on earth are the next three lines of code?? 
-	float x0 = zoom * (1 / aspect); //They don't seem to make sence... 
-	float y1 = zoom;				//They aren't like anything else online or in Prof Egbert's Slides
-	//float fovX = M_PI * 3;		//BTW these are from my own CS 355 lab. I'm just confused at why it is different.
-	//float fovY = M_PI * 3;
-
-	//float x0 = atan2(fovX,2);
-	//float y1 = atan2(fovY,2);
-	float z2 = -(zFar + zNear) / (zFar - zNear);
-	float z3 = (-2 * zNear * zFar) / (zFar - zNear);
-	float w2 = -1;
-	return glm::mat4(x0, 0, 0, 0, 0, y1, 0, 0, 0, 0, z2, w2, 0, 0, z3, 0);
 }
 
 glm::vec3 Camera::getXVector() const {
