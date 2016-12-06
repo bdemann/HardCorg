@@ -39,7 +39,10 @@ std::vector<Bomb*> bombs;
 Mesh* ground;
 Mesh* block;
 Mesh* wall;
-Mesh* bomb;
+Mesh* bomb1;
+Mesh* bomb2;
+Mesh* bomb3;
+Mesh* bomb4;
 Mesh* corgi;
 
 Texture* textGround;
@@ -49,7 +52,10 @@ Texture* textCorgi1;
 Texture* textCorgi2;
 Texture* textCorgi3;
 Texture* textCorgi4;
-Texture* textBomb;
+Texture* textBomb1;
+Texture* textBomb2;
+Texture* textBomb3;
+Texture* textBomb4;
 
 Camera* camera;
 
@@ -59,14 +65,17 @@ int main() {
 	Display display(WIDTH, HEIGHT, "Project 3");
 
 	float x = (ROWS * UNIT_WIDTH / 2) - UNIT_WIDTH / 2;
-	float z = COLS * UNIT_HEIGHT / 2;
-	camera = new Camera(glm::vec3(x, 5.0f, z), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	float z = COLS * UNIT_HEIGHT;
+	camera = new Camera(glm::vec3(x, 10.0f, z + 2), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	Shader shader("./res/shaders/basicShader");
 
 	ground = new Mesh("./res/obj/floor.obj");
 	block = new Mesh("./res/obj/block.obj");
 	wall = new Mesh("./res/obj/block.obj");
-	bomb = new Mesh("./res/obj/bomb.obj");
+	bomb1 = new Mesh("./res/obj/bomb1.obj");
+	bomb2 = new Mesh("./res/obj/bomb2.obj");
+	bomb3 = new Mesh("./res/obj/bomb3.obj");
+	bomb4 = new Mesh("./res/obj/bomb4.obj");
 	corgi = new Mesh("./res/obj/corgi.obj");
 
 	textGround = new Texture("./res/textures/floorTexture.png");
@@ -76,7 +85,10 @@ int main() {
 	textCorgi2 = new Texture("./res/textures/corgiBlueTexture.png");
 	textCorgi3 = new Texture("./res/textures/corgiRedTexture.png");
 	textCorgi4 = new Texture("./res/textures/corgiGreenTexture.png");
-	textBomb = new Texture("./res/textures/bombTexture.png");
+	textBomb1 = new Texture("./res/textures/bombTexture1.png");
+	textBomb2 = new Texture("./res/textures/bombTexture2.png");
+	textBomb3 = new Texture("./res/textures/bombTexture3.png");
+	textBomb4 = new Texture("./res/textures/bombTexture4.png");
 
 
 	for (int row = 0; row < ROWS; row++) {
@@ -477,7 +489,6 @@ void Display::update(Camera& camera) {
 					else {
 						corgi->turn(Direction::UP);
 					}
-					camera.translateX(1);
 					break;
 				case SDLK_LEFT:
 					if (passable(gameBoard[row][col - 1])) {
@@ -486,7 +497,6 @@ void Display::update(Camera& camera) {
 					else {
 						corgi->turn(Direction::LEFT);
 					}
-					camera.translateY(1);
 					break;
 				case SDLK_DOWN:
 					if (passable(gameBoard[row + 1][col])) {
@@ -495,8 +505,6 @@ void Display::update(Camera& camera) {
 					else {
 						corgi->turn(Direction::DOWN);
 					}
-
-					camera.translateX(-1);
 					break;
 				case SDLK_RIGHT:
 					if (passable(gameBoard[row][col + 1])) {
@@ -505,18 +513,9 @@ void Display::update(Camera& camera) {
 					else {
 						corgi->turn(Direction::RIGHT);
 					}
-
-					camera.translateY(-1);
-					break;
-
-				case SDLK_m:
-					camera.translateZ(-1);
-					break;
-				case SDLK_n:
-					camera.translateZ(1);
 					break;
 				case SDLK_SPACE:
-					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb1, textBomb1, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -560,7 +559,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_e:
-					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb2, textBomb2, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -604,7 +603,7 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_o:
-					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
+					bombs.push_back(new Bomb(row, col, bomb3, textBomb3, corgi->getBlastRadius()));
 					break;
 				}
 			}
@@ -615,7 +614,7 @@ void Display::update(Camera& camera) {
 				int col = corgi->getCol();
 
 				switch (e.key.keysym.sym) {
-				case SDLK_UP:
+				case SDLK_t:
 					if (passable(gameBoard[row - 1][col])) {
 						corgi->move(Direction::UP);
 					}
@@ -623,7 +622,7 @@ void Display::update(Camera& camera) {
 						corgi->turn(Direction::UP);
 					}
 					break;
-				case SDLK_LEFT:
+				case SDLK_f:
 					if (passable(gameBoard[row][col - 1])) {
 						corgi->move(Direction::LEFT);
 					}
@@ -631,7 +630,7 @@ void Display::update(Camera& camera) {
 						corgi->turn(Direction::LEFT);
 					}
 					break;
-				case SDLK_DOWN:
+				case SDLK_g:
 					if (passable(gameBoard[row + 1][col])) {
 						corgi->move(Direction::DOWN);
 					}
@@ -639,7 +638,7 @@ void Display::update(Camera& camera) {
 						corgi->turn(Direction::DOWN);
 					}
 					break;
-				case SDLK_RIGHT:
+				case SDLK_h:
 					if (passable(gameBoard[row][col + 1])) {
 						corgi->move(Direction::RIGHT);
 					}
@@ -647,8 +646,8 @@ void Display::update(Camera& camera) {
 						corgi->turn(Direction::RIGHT);
 					}
 					break;
-				case SDLK_SPACE:
-					bombs.push_back(new Bomb(row, col, bomb, textBomb, corgi->getBlastRadius()));
+				case SDLK_r:
+					bombs.push_back(new Bomb(row, col, bomb4, textBomb4, corgi->getBlastRadius()));
 					break;
 				}
 			}
