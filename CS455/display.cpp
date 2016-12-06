@@ -108,8 +108,6 @@ int main() {
 	textBomb3 = new Texture("./res/textures/bombTexture3.png");
 	textBomb4 = new Texture("./res/textures/bombTexture4.png");
 
-	ghosts = true;
-
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
 			//Transform transform = Transform(glm::vec3(row, -1, col), glm::vec3(0, 3.141596 * 0.6666666, 0), glm::vec3(.5, .5, .5));
@@ -344,6 +342,9 @@ int main() {
 			}
 		}
 		for (Corgi* c : corgis) {
+			if (ghosts) {
+				std::cout << "Ghosts" << std::endl;
+			}
 			if (ghosts || !c->isDestroyed()) {
 				c->getTexture()->bind(0);
 				Transform trans = transforms[c->getRow()][c->getCol()];
@@ -356,15 +357,12 @@ int main() {
 		std::vector<Bomb*>::iterator it;
 		for (it = bombs.begin(); it != bombs.end();) {
 			Bomb* b = (*it);
-			std::cout << "Bomb" << std::endl;
 			if (timer % 50 == 0) {
 				b->decrementTimer();
-				std::cout << "Tick " << b->getTimer() << std::endl;
 				b->decrementTimer();
 			}
 			if (b->getTimer() <= 0 && !b->isDestroyed()) {
 				b->explode();
-				std::cout << "Boom" << std::endl;
 				int blastRadius = b->getBlastRadius();
 				int row = b->getRow();
 				int col = b->getCol();
@@ -602,7 +600,7 @@ void Display::update(Camera& camera) {
 				}
 			}
 
-			if (corgis.size() > 1 && (ghosts || corgis.at(1)->isDestroyed())) {
+			if (corgis.size() > 1 && (ghosts || !corgis.at(1)->isDestroyed())) {
 				Corgi* corgi = corgis.at(1);
 				int row = corgi->getRow();
 				int col = corgi->getCol();
