@@ -1,6 +1,6 @@
 #include "transform.h"
 #include <string>
-#include "glm\glm.hpp"
+#include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include <iostream>
 

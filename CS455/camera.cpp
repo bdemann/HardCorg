@@ -1,5 +1,5 @@
 #include "camera.h"
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <iostream>

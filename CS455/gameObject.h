@@ -11,10 +11,10 @@ public:
 
 	virtual std::string toString();
 
-	int GameObject::getRow() {
+	int getRow() {
 		return row;
 	}
-	int GameObject::getCol() {
+	int getCol() {
 		return col;
 	}
 	virtual Mesh* getMesh() {
