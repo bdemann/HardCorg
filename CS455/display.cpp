@@ -44,6 +44,10 @@ Mesh* bomb2;
 Mesh* bomb3;
 Mesh* bomb4;
 Mesh* corgi;
+Mesh* ghost1;
+Mesh* ghost2;
+Mesh* ghost3;
+Mesh* ghost4;
 
 Texture* textGround;
 Texture* textWall;
@@ -52,6 +56,10 @@ Texture* textCorgi1;
 Texture* textCorgi2;
 Texture* textCorgi3;
 Texture* textCorgi4;
+Texture* textGhost1;
+Texture* textGhost2;
+Texture* textGhost3;
+Texture* textGhost4;
 Texture* textBomb1;
 Texture* textBomb2;
 Texture* textBomb3;
@@ -59,14 +67,16 @@ Texture* textBomb4;
 
 Camera* camera;
 
+bool ghosts;
+
 bool isExploded(int row, int col);
 
 int main() {
 	Display display(WIDTH, HEIGHT, "Project 3");
 
 	float x = (ROWS * UNIT_WIDTH / 2) - UNIT_WIDTH / 2;
-	float z = COLS * UNIT_HEIGHT;
-	camera = new Camera(glm::vec3(x, 10.0f, z + 2), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	float z = COLS * UNIT_HEIGHT / 2;
+	camera = new Camera(glm::vec3(x, 20.0f, z + 5), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	Shader shader("./res/shaders/basicShader");
 
 	ground = new Mesh("./res/obj/floor.obj");
@@ -77,6 +87,10 @@ int main() {
 	bomb3 = new Mesh("./res/obj/bomb3.obj");
 	bomb4 = new Mesh("./res/obj/bomb4.obj");
 	corgi = new Mesh("./res/obj/corgi.obj");
+	ghost1 = new Mesh("./res/obj/corgi.obj");
+	ghost2 = new Mesh("./res/obj/corgi.obj");
+	ghost3 = new Mesh("./res/obj/corgi.obj");
+	ghost4 = new Mesh("./res/obj/corgi.obj");
 
 	textGround = new Texture("./res/textures/floorTexture.png");
 	textWall = new Texture("./res/textures/wallTexture.png");
@@ -85,11 +99,16 @@ int main() {
 	textCorgi2 = new Texture("./res/textures/corgiBlueTexture.png");
 	textCorgi3 = new Texture("./res/textures/corgiRedTexture.png");
 	textCorgi4 = new Texture("./res/textures/corgiGreenTexture.png");
+	textGhost1 = new Texture("./res/textures/ghostOrangeTexture.png");
+	textGhost2 = new Texture("./res/textures/ghostBlueTexture.png");
+	textGhost3 = new Texture("./res/textures/ghostRedTexture.png");
+	textGhost4 = new Texture("./res/textures/ghostGreenTexture.png");
 	textBomb1 = new Texture("./res/textures/bombTexture1.png");
 	textBomb2 = new Texture("./res/textures/bombTexture2.png");
 	textBomb3 = new Texture("./res/textures/bombTexture3.png");
 	textBomb4 = new Texture("./res/textures/bombTexture4.png");
 
+	ghosts = true;
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -249,10 +268,12 @@ int main() {
 
 	Transform transforms[ROWS][COLS] = { { t00,t01,t02,t03,t04,t05,t06,t07,t08,t09,t0a},{ t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t1a},{ t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t2a },{ t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t3a },{ t40,t41,t42,t43,t44,t45,t46,t47,t48,t49,t4a },{ t50,t51,t52,t53,t54,t55,t56,t57,t58,t59,t5a },{ t60,t61,t62,t63,t64,t65,t66,t67,t68,t69,t6a },{ t70,t71,t72,t73,t74,t75,t76,t77,t78,t79,t7a },{ t80,t81,t82,t83,t84,t85,t86,t87,t88,t89,t8a },{ t90,t91,t92,t93,t94,t95,t96,t97,t98,t99,t9a },{ ta0,ta1,ta2,ta3,ta4,ta5,ta6,ta7,ta8,ta9,taa } };
 
-	corgis.push_back(new Corgi(1, 1, corgi, textCorgi1));
-	corgis.push_back(new Corgi(ROWS - 2, COLS - 2, corgi, textCorgi2));
-	corgis.push_back(new Corgi(1, COLS - 2, corgi, textCorgi3));
-	corgis.push_back(new Corgi(ROWS - 2, 1, corgi, textCorgi4));
+	corgis.push_back(new Corgi(1, 1, corgi, textCorgi1, ghost1, textGhost1));
+	corgis.push_back(new Corgi(ROWS - 2, COLS - 2, corgi, textCorgi2, ghost2, textGhost2));
+	corgis.push_back(new Corgi(1, COLS - 2, corgi, textCorgi3, ghost3, textGhost3));
+	corgis.push_back(new Corgi(ROWS - 2, 1, corgi, textCorgi4, ghost4, textGhost4));
+
+	ghosts = true;
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -323,7 +344,7 @@ int main() {
 			}
 		}
 		for (Corgi* c : corgis) {
-			if (!c->isDestroyed()) {
+			if (ghosts || !c->isDestroyed()) {
 				c->getTexture()->bind(0);
 				Transform trans = transforms[c->getRow()][c->getCol()];
 				trans.getRotation().y = c->getRotation();
@@ -476,7 +497,7 @@ void Display::update(Camera& camera) {
 			break;
 		case SDL_KEYDOWN:
 			//Start Corgi movement events
-			if (corgis.size() > 0) {
+			if (corgis.size() > 0 && (ghosts || !corgis.at(0)->isDestroyed())) {
 				Corgi* corgi = corgis.at(0);
 				int row = corgi->getRow();
 				int col = corgi->getCol();
@@ -520,7 +541,7 @@ void Display::update(Camera& camera) {
 				}
 			}
 
-			if (corgis.size() > 1) {
+			if (corgis.size() > 1 && (ghosts || corgis.at(1)->isDestroyed())) {
 				Corgi* corgi = corgis.at(1);
 				int row = corgi->getRow();
 				int col = corgi->getCol();
@@ -564,7 +585,7 @@ void Display::update(Camera& camera) {
 				}
 			}
 
-			if (corgis.size() > 2) {
+			if (corgis.size() > 2 && (ghosts || !corgis.at(2)->isDestroyed())) {
 				Corgi* corgi = corgis.at(2);
 				int row = corgi->getRow();
 				int col = corgi->getCol();
@@ -608,7 +629,7 @@ void Display::update(Camera& camera) {
 				}
 			}
 
-			if (corgis.size() > 3) {
+			if (corgis.size() > 3 && (ghosts || !corgis.at(3)->isDestroyed())) {
 				Corgi* corgi = corgis.at(3);
 				int row = corgi->getRow();
 				int col = corgi->getCol();

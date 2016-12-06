@@ -2,13 +2,15 @@
 
 
 
-Corgi::Corgi(int x, int y, Mesh* mesh, Texture* texture) : GameObject(x, y, mesh, texture)
+Corgi::Corgi(int x, int y, Mesh* mesh, Texture* texture, Mesh* ghostMesh, Texture* ghostTexture) : GameObject(x, y, mesh, texture)
 {
 	this->destructable = true;
 	this->dir = Direction::UP;
 	this->hp = 1;
 	this->blastRadius = 1;
 	this->infinite = false;
+	this->ghostMesh = ghostMesh;
+	this->ghostTexture = ghostTexture;
 }
 
 

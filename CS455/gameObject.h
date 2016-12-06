@@ -17,10 +17,10 @@ public:
 	int GameObject::getCol() {
 		return col;
 	}
-	Mesh* getMesh() {
+	virtual Mesh* getMesh() {
 		return mesh;
 	}
-	Texture* getTexture() {
+	virtual Texture* getTexture() {
 		return texture;
 	}
 	float getRotation() {
