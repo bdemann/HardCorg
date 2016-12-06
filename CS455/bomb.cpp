@@ -2,6 +2,7 @@
 
 Bomb::Bomb(int x, int y, Mesh* mesh, Texture* texture, int blastRadius) : GameObject(x, y, mesh, texture)
 {
+	this->exploded = false;
 	this->destructable = true;
 	this->impassable = true;
 	this->timer = 5;

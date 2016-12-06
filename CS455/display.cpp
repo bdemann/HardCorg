@@ -352,44 +352,56 @@ int main() {
 				c->getMesh()->draw();
 			}
 		}
-		for (Bomb* b : bombs) {
-			if (timer % 75 == 0 && !b->isDestroyed()) {
+
+		std::vector<Bomb*>::iterator it;
+		for (it = bombs.begin(); it != bombs.end();) {
+			Bomb* b = (*it);
+			std::cout << "Bomb" << std::endl;
+			if (timer % 50 == 0) {
+				b->decrementTimer();
 				std::cout << "Tick " << b->getTimer() << std::endl;
 				b->decrementTimer();
-				if (b->getTimer() == 0) {
-					std::cout << "Boom" << std::endl;
-					int blastRadius = b->getBlastRadius();
-					int row = b->getRow();
-					int col = b->getCol();
-					//TODO turns out if you stand on top of the bomb you will be perfectly safe... Which brings up this interesting thing. What do we do when two things occupy the same location? In this version we have each thing that keeps track of it's own position so it works out kind of... unless we need to do this or maybe picking up items may have a similar problem.
-					for (GameObject* go : gameBoard[row][col]) {
-						go->hit();
+			}
+			if (b->getTimer() <= 0 && !b->isDestroyed()) {
+				b->explode();
+				std::cout << "Boom" << std::endl;
+				int blastRadius = b->getBlastRadius();
+				int row = b->getRow();
+				int col = b->getCol();
+				//TODO turns out if you stand on top of the bomb you will be perfectly safe... Which brings up this interesting thing. What do we do when two things occupy the same location? In this version we have each thing that keeps track of it's own position so it works out kind of... unless we need to do this or maybe picking up items may have a similar problem.
+				for (GameObject* go : gameBoard[row][col]) {
+					go->hit();
+				}
+				bool contUp = true;
+				bool contDown = true;
+				bool contRight = true;
+				bool contLeft = true;
+				for (int j = 1; j < blastRadius + 1; j++) {
+					if (contUp && !isExploded(row + j, col)) {
+						contUp = false;
 					}
-					bool contUp = true;
-					bool contDown = true;
-					bool contRight = true;
-					bool contLeft = true;
-					for (int j = 1; j < blastRadius + 1; j++) {
-						if (contUp && !isExploded(row + j, col)) {
-							contUp = false;
-						}
-						if (contDown && !isExploded(row - j, col)) {
-							contDown = false;
-						}
-						if (contRight && !isExploded(row, col + j)) {
-							contRight = false;
-						}
-						if (contLeft && !isExploded(row, col - j)) {
-							contLeft = false;
-						}
+					if (contDown && !isExploded(row - j, col)) {
+						contDown = false;
+					}
+					if (contRight && !isExploded(row, col + j)) {
+						contRight = false;
+					}
+					if (contLeft && !isExploded(row, col - j)) {
+						contLeft = false;
 					}
 				}
-			}
-			if (!b->isDestroyed()) {
-				b->getTexture()->bind(0);
-				Transform trans = transforms[b->getRow()][b->getCol()];
-				shader.update(trans, *camera);
-				b->getMesh()->draw();
+				std::vector<GameObject*>* cell = &gameBoard[row][col];
+				for (GameObject* go : *cell) {
+					std::cout << "Before " << go->toString() << std::endl;
+				}
+				cell->erase(std::find(cell->begin(), cell->end(), b));
+				for (GameObject* go : *cell) {
+					std::cout << "After " << go->toString() << std::endl;
+				}
+				it = bombs.erase(it);
+				delete(b);
+			} else {
+				it++;
 			}
 		}
 
@@ -397,6 +409,55 @@ int main() {
 		timer++;
 	}
 
+	for (int row = 0; row < ROWS; row++) {
+		for (int col = 0; col < COLS; col++) {
+			std::vector<GameObject*>::iterator it;
+			std::vector<GameObject*> cell;
+			for ( it = cell.begin(); it != cell.end(); ) {
+				GameObject* go = (*it);
+				cell.erase(it);
+				delete(go);
+			}
+		}
+	}
+
+	std::vector<Corgi*>::iterator it;
+	for (it = corgis.begin(); it != corgis.end();) {
+		Corgi* c = (*it);
+		it = corgis.erase(it);
+		delete(c);
+	}
+
+	delete(camera);
+
+	delete(ground);
+	delete(block);
+	delete(wall);
+	delete(bomb1);
+	delete(bomb2);
+	delete(bomb3);
+	delete(bomb4);
+	delete(corgi);
+	delete(ghost1);
+	delete(ghost2);
+	delete(ghost3);
+	delete(ghost4);
+
+	delete(textGround);
+	delete(textWall);
+	delete(textBlock);
+	delete(textCorgi1);
+	delete(textCorgi2);
+	delete(textCorgi3);
+	delete(textCorgi4);
+	delete(textGhost1);
+	delete(textGhost2);
+	delete(textGhost3);
+	delete(textGhost4);
+	delete(textBomb1);
+	delete(textBomb2);
+	delete(textBomb3);
+	delete(textBomb4);
 	return 0;
 }
 
@@ -536,7 +597,9 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					bombs.push_back(new Bomb(row, col, bomb1, textBomb1, corgi->getBlastRadius()));
+					Bomb* b = new Bomb(row, col, bomb1, textBomb1, corgi->getBlastRadius());
+					bombs.push_back(b);
+					gameBoard[row][col].push_back(b);
 					break;
 				}
 			}
@@ -580,7 +643,9 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_e:
-					bombs.push_back(new Bomb(row, col, bomb2, textBomb2, corgi->getBlastRadius()));
+					Bomb* b = new Bomb(row, col, bomb2, textBomb2, corgi->getBlastRadius());
+					bombs.push_back(b);
+					gameBoard[row][col].push_back(b);
 					break;
 				}
 			}
@@ -624,7 +689,9 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_o:
-					bombs.push_back(new Bomb(row, col, bomb3, textBomb3, corgi->getBlastRadius()));
+					Bomb* b = new Bomb(row, col, bomb3, textBomb3, corgi->getBlastRadius());
+					bombs.push_back(b);
+					gameBoard[row][col].push_back(b);
 					break;
 				}
 			}
@@ -668,7 +735,10 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_r:
-					bombs.push_back(new Bomb(row, col, bomb4, textBomb4, corgi->getBlastRadius()));
+					Bomb* b = new Bomb(row, col, bomb4, textBomb4, corgi->getBlastRadius());
+					bombs.push_back(b);
+					gameBoard[row][col].push_back(b);
+					break;
 					break;
 				}
 			}

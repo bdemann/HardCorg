@@ -13,7 +13,11 @@ public:
 	}
 
 	bool isDestroyed() {
-		return timer <= 0;
+		return timer <= 0 && exploded;
+	}
+
+	void explode() {
+		exploded = true;
 	}
 
 	void decrementTimer();
@@ -25,5 +29,6 @@ public:
 private:
 	int timer;
 	int blastRadius;
+	int exploded;
 };
 
