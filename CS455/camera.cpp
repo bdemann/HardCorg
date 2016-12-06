@@ -27,10 +27,10 @@ Camera::Camera(glm::vec3& position, glm::vec3& lookAt, glm::vec3& up, int width,
 	this->perspective = glm::perspective(fov, 1.0f, zNear, zFar);
 }
 
-glm::mat4 Camera::getViewProjection() const {
+//glm::mat4 Camera::getViewProjection() const {
 	//return perspective * glm::lookAt(position, position - lookAt, up);
-	return perspective * worldToCamera();
-}
+//	return perspective * worldToCamera();
+//}
 
 glm::mat4 Camera::rotateCamera() const {
 	return rotate;

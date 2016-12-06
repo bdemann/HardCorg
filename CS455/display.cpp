@@ -47,6 +47,8 @@ Texture* textWall;
 Texture* textBlock;
 Texture* textCorgi1;
 Texture* textCorgi2;
+Texture* textCorgi3;
+Texture* textCorgi4;
 Texture* textBomb;
 
 Camera* camera;
@@ -58,7 +60,7 @@ int main() {
 
 	float x = (ROWS * UNIT_WIDTH / 2) - UNIT_WIDTH / 2;
 	float z = COLS * UNIT_HEIGHT / 2;
-	camera = new Camera(glm::vec3(x, 20, z + 5), glm::vec3(x, 0, z), glm::vec3(0, 1, 0), WIDTH, HEIGHT);
+	camera = new Camera(glm::vec3(x, 5.0f, z), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	Shader shader("./res/shaders/basicShader");
 
 	ground = new Mesh("./res/obj/floor.obj");
@@ -70,8 +72,10 @@ int main() {
 	textGround = new Texture("./res/textures/floorTexture.png");
 	textWall = new Texture("./res/textures/wallTexture.png");
 	textBlock = new Texture("./res/textures/blockTexture.png");
-	textCorgi1 = new Texture("./res/textures/corgiTexture.png");
-	textCorgi2 = new Texture("./res/textures/corgiTexture.png");
+	textCorgi1 = new Texture("./res/textures/corgiOrangeTexture.png");
+	textCorgi2 = new Texture("./res/textures/corgiBlueTexture.png");
+	textCorgi3 = new Texture("./res/textures/corgiRedTexture.png");
+	textCorgi4 = new Texture("./res/textures/corgiGreenTexture.png");
 	textBomb = new Texture("./res/textures/bombTexture.png");
 
 
@@ -235,6 +239,8 @@ int main() {
 
 	corgis.push_back(new Corgi(1, 1, corgi, textCorgi1));
 	corgis.push_back(new Corgi(ROWS - 2, COLS - 2, corgi, textCorgi2));
+	corgis.push_back(new Corgi(1, COLS - 2, corgi, textCorgi3));
+	corgis.push_back(new Corgi(ROWS - 2, 1, corgi, textCorgi4));
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
