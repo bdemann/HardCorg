@@ -1,6 +1,7 @@
 #pragma once
 #include "gameObject.h"
 #include "mesh.h"
+#include "bomb.h"
 #include "texture.h"
 #include <string>
 
@@ -31,11 +32,24 @@ public:
 		}
 		return texture;
 	}
+	void addBomb(Bomb* bomb) {
+		bombs.push_back(bomb);
+	}
+
+	void removeBomb(Bomb* bomb) {
+		bombs.erase(std::find(bombs.begin(), bombs.end(), bomb));
+	}
+	bool hasMaxBombs() {
+		return bombs.size() >= numBombs;
+	}
+	
 private:
 	Direction dir;
 	int hp;
 	int blastRadius;
 	bool infinite;
+	unsigned int numBombs;
+	std::vector<Bomb*> bombs;
 	Mesh* ghostMesh;
 	Texture* ghostTexture;
 };

@@ -5,7 +5,7 @@
 class Bomb : public GameObject
 {
 public:
-	Bomb(int x, int y, Mesh* mesh, Texture* texture, int blastRadius);
+	Bomb(int x, int y, Mesh* mesh, Texture* texture, int blastRadius, int owner);
 	~Bomb();
 
 	void hit() {
@@ -20,6 +20,10 @@ public:
 		exploded = true;
 	}
 
+	int getOwner() {
+		return owner;
+	}
+
 	void decrementTimer();
 	int getTimer();
 	std::string toString();
@@ -27,6 +31,7 @@ public:
 	void setBlastRadius(int blastRadius);
 
 private:
+	int owner;
 	int timer;
 	int blastRadius;
 	int exploded;

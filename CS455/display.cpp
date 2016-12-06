@@ -391,13 +391,8 @@ int main() {
 					}
 				}
 				std::vector<GameObject*>* cell = &gameBoard[row][col];
-				for (GameObject* go : *cell) {
-					std::cout << "Before " << go->toString() << std::endl;
-				}
 				cell->erase(std::find(cell->begin(), cell->end(), b));
-				for (GameObject* go : *cell) {
-					std::cout << "After " << go->toString() << std::endl;
-				}
+				corgis.at(b->getOwner())->removeBomb(b);
 				it = bombs.erase(it);
 				delete(b);
 			} else {
@@ -597,9 +592,12 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_SPACE:
-					Bomb* b = new Bomb(row, col, bomb1, textBomb1, corgi->getBlastRadius());
-					bombs.push_back(b);
-					gameBoard[row][col].push_back(b);
+					if (!corgi->hasMaxBombs()) {
+						Bomb* b = new Bomb(row, col, bomb1, textBomb1, corgi->getBlastRadius(), 0);
+						bombs.push_back(b);
+						gameBoard[row][col].push_back(b);
+						corgi->addBomb(b);
+					}
 					break;
 				}
 			}
@@ -643,9 +641,12 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_e:
-					Bomb* b = new Bomb(row, col, bomb2, textBomb2, corgi->getBlastRadius());
-					bombs.push_back(b);
-					gameBoard[row][col].push_back(b);
+					if (!corgi->hasMaxBombs()) {
+						Bomb* b = new Bomb(row, col, bomb2, textBomb2, corgi->getBlastRadius(), 1);
+						bombs.push_back(b);
+						gameBoard[row][col].push_back(b);
+						corgi->addBomb(b);
+					}
 					break;
 				}
 			}
@@ -689,9 +690,12 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_o:
-					Bomb* b = new Bomb(row, col, bomb3, textBomb3, corgi->getBlastRadius());
-					bombs.push_back(b);
-					gameBoard[row][col].push_back(b);
+					if (!corgi->hasMaxBombs()) {
+						Bomb* b = new Bomb(row, col, bomb3, textBomb3, corgi->getBlastRadius(), 2);
+						bombs.push_back(b);
+						gameBoard[row][col].push_back(b);
+						corgi->addBomb(b);
+					}
 					break;
 				}
 			}
@@ -735,10 +739,12 @@ void Display::update(Camera& camera) {
 					}
 					break;
 				case SDLK_r:
-					Bomb* b = new Bomb(row, col, bomb4, textBomb4, corgi->getBlastRadius());
-					bombs.push_back(b);
-					gameBoard[row][col].push_back(b);
-					break;
+					if (!corgi->hasMaxBombs()) {
+						Bomb* b = new Bomb(row, col, bomb4, textBomb4, corgi->getBlastRadius(), 3);
+						bombs.push_back(b);
+						gameBoard[row][col].push_back(b);
+						corgi->addBomb(b);
+					}
 					break;
 				}
 			}
