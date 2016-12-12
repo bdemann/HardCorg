@@ -37,7 +37,7 @@ std::vector<Corgi*> corgis;
 std::vector<Bomb*> bombs;
 std::vector<Explosion*> explosions;
 
-Mesh* ground;
+Mesh* tile;
 Mesh* block;
 Mesh* wall1;
 Mesh* wall2;
@@ -54,7 +54,7 @@ Mesh* ghost4;
 
 Mesh* explosion;
 
-Texture* textGround;
+Texture* textFloor;
 Texture* textWall1;
 Texture* textWall2;
 Texture* textWall3;
@@ -88,7 +88,13 @@ int main() {
 	camera = new Camera(glm::vec3(x, 20.0f, z + 5), 70.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	Shader shader("./res/shaders/basicShader");
 
-	ground = new Mesh("./res/obj/floor.obj");
+	Mesh* ground = new Mesh("./res/obj/floor.obj");
+	//glm::vec3 thing(ROWS, 1, COLS);
+	glm::vec3 thing(-1, 1, -1);
+	Transform* groundTrans = new Transform (thing, glm::vec3(), 1);
+	Texture* textGround = new Texture ("./res/textures/Ground_color.png");
+
+	tile = new Mesh("./res/obj/floor.obj");
 	block = new Mesh("./res/obj/block.obj");
 
 	wall1 = new Mesh("./res/obj/Wall1.obj");
@@ -105,9 +111,9 @@ int main() {
 	ghost3 = new Mesh("./res/obj/corgi.obj");
 	ghost4 = new Mesh("./res/obj/corgi.obj");
 
-	explosion = new Mesh("./res/obj/ExplsionTop.obj");
+	explosion = new Mesh("./res/obj/ExplosionTop.obj");
 
-	textGround = new Texture("./res/textures/floorTexture.png");
+	textFloor = new Texture("./res/textures/Ground_color.png");
 	
 	textWall1 = new Texture("./res/textures/Wall1_color.png");
 	textWall2 = new Texture("./res/textures/Wall2_color.png");
@@ -306,7 +312,7 @@ int main() {
 			transforms[row][col].getScale().z = 1;
 
 			//Add Walls and floor
-			GameObject* piece = new Floor(row, col, ground, textGround);
+			GameObject* piece = new Floor(row, col, tile, textFloor);
 			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
 				int num = rand();
 				if (num % 3 == 0) {
@@ -355,6 +361,11 @@ int main() {
 		display.clear(0.0f, 0.0f, 0.0f, 0);
 
 		shader.bind();
+
+		//Draw the Ground Plane Sweetie <3
+		textGround->bind(0);
+		shader.update(*groundTrans, *camera);
+		ground->draw();
 
 		for (int row = 0; row < ROWS; row++) {
 			for (int col = 0; col < COLS; col++) {
@@ -418,15 +429,12 @@ int main() {
 						contUp = false;
 					}
 					if (contDown && !isExploded(row - j, col)) {
-						//Draw Explosion
 						contDown = false;
 					}
 					if (contRight && !isExploded(row, col + j)) {
-						//Draw Explosion
 						contRight = false;
 					}
 					if (contLeft && !isExploded(row, col - j)) {
-						//Draw Explosion
 						contLeft = false;
 					}
 				}
@@ -493,7 +501,7 @@ int main() {
 
 	delete(camera);
 
-	delete(ground);
+	delete(tile);
 	delete(block);
 	delete(wall1);
 	delete(wall2);
@@ -508,7 +516,7 @@ int main() {
 	delete(ghost3);
 	delete(ghost4);
 
-	delete(textGround);
+	delete(textFloor);
 	delete(textWall1);
 	delete(textWall2);
 	delete(textWall3);
@@ -530,15 +538,23 @@ int main() {
 
 bool isExploded(int row, int col) {
 	bool cont = true;
-	std::vector<GameObject*> cell = gameBoard[row][col];
 	for (unsigned int i = 0; i < corgis.size(); i++) {
 		Corgi* corgi = corgis.at(i);
 		if (corgi->getRow() == row && corgi->getCol() == col) {
 			corgi->hit();
 		}
 	}
-	for (GameObject* go : cell) {
+	std::vector<GameObject*> cell = gameBoard[row][col];
+	std::vector<GameObject*>::iterator it;
+	for (it = cell.begin(); it != cell.end();) {
+		GameObject* go = *it;
 		go->hit();
+		if (go->isDestroyed()) {
+			it = cell.erase(it);
+		}
+		else {
+			it++;
+		}
 		if (go->isImpassable()) {
 			cont = false;
 		}
@@ -602,7 +618,7 @@ Display::~Display() {
 
 bool passable(std::vector<GameObject*> objs) {
 	for (GameObject* obj : objs) {
-		if (obj->isImpassable() && !obj->isDestroyed()) {
+		if (obj->isImpassable()) {
 			return false;
 		}
 	}
@@ -620,6 +636,28 @@ void Display::update(Camera& camera) {
 			closed = true;
 			break;
 		case SDL_KEYDOWN:
+			//camera movement
+			switch (e.key.keysym.sym) {
+			case SDLK_1:
+				camera.translateZ(1);
+				break;
+			case SDLK_2:
+				camera.translateZ(-1);
+				break;
+			case SDLK_3:
+				camera.translateX(1);
+				break;
+			case SDLK_4:
+				camera.translateX(-1);
+				break;
+			case SDLK_5:
+				camera.translateY(1);
+				break;
+			case SDLK_6:
+				camera.translateY(-1);
+				break;
+			}
+
 			//Start Corgi movement events
 			if (corgis.size() > 0 && (ghosts || !corgis.at(0)->isDestroyed())) {
 				Corgi* corgi = corgis.at(0);

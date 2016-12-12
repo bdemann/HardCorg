@@ -28,7 +28,7 @@ public:
 	}
 
 	bool isImpassable() {
-		return impassable;
+		return impassable && !isDestroyed();
 	}
 	bool isDestructable() {
 		return destructable;
