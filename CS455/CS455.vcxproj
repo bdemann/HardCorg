@@ -166,6 +166,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="corgi.h" />
     <ClInclude Include="display.h" />
+    <ClInclude Include="explosion.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="gameObject.h" />
     <ClInclude Include="mesh.h" />

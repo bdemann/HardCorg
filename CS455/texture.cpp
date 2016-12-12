@@ -18,7 +18,7 @@ Texture::Texture(const std::string& fileName) {
 	if (m_texture == NULL || width == NULL || height == NULL || numComponents == NULL) {
 		std::cerr << "texture or something is null" << std::endl;
 		if (width == NULL) {
-			std::cout << "wdith";
+			std::cout << "width";
 		}
 		if (height == NULL) {
 			std::cout << "height";

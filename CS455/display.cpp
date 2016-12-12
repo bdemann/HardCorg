@@ -9,7 +9,7 @@
 #include "block.h"
 #include "corgi.h"
 #include "bomb.h"
-
+#include "explosion.h"
 
 #include "display.h"
 #include "camera.h"
@@ -35,10 +35,13 @@ Transform transforms[ROWS][COLS];
 int nums[ROWS][COLS];
 std::vector<Corgi*> corgis;
 std::vector<Bomb*> bombs;
+std::vector<Explosion*> explosions;
 
 Mesh* ground;
 Mesh* block;
-Mesh* wall;
+Mesh* wall1;
+Mesh* wall2;
+Mesh* wall3;
 Mesh* bomb1;
 Mesh* bomb2;
 Mesh* bomb3;
@@ -49,8 +52,12 @@ Mesh* ghost2;
 Mesh* ghost3;
 Mesh* ghost4;
 
+Mesh* explosion;
+
 Texture* textGround;
-Texture* textWall;
+Texture* textWall1;
+Texture* textWall2;
+Texture* textWall3;
 Texture* textBlock;
 Texture* textCorgi1;
 Texture* textCorgi2;
@@ -64,6 +71,8 @@ Texture* textBomb1;
 Texture* textBomb2;
 Texture* textBomb3;
 Texture* textBomb4;
+
+Texture* textExplosion;
 
 Camera* camera;
 
@@ -81,7 +90,11 @@ int main() {
 
 	ground = new Mesh("./res/obj/floor.obj");
 	block = new Mesh("./res/obj/block.obj");
-	wall = new Mesh("./res/obj/block.obj");
+
+	wall1 = new Mesh("./res/obj/Wall1.obj");
+	wall2 = new Mesh("./res/obj/Wall2.obj");
+	wall3 = new Mesh("./res/obj/Wall3.obj");
+
 	bomb1 = new Mesh("./res/obj/bomb1.obj");
 	bomb2 = new Mesh("./res/obj/bomb2.obj");
 	bomb3 = new Mesh("./res/obj/bomb3.obj");
@@ -92,8 +105,14 @@ int main() {
 	ghost3 = new Mesh("./res/obj/corgi.obj");
 	ghost4 = new Mesh("./res/obj/corgi.obj");
 
+	explosion = new Mesh("./res/obj/ExplsionTop.obj");
+
 	textGround = new Texture("./res/textures/floorTexture.png");
-	textWall = new Texture("./res/textures/wallTexture.png");
+	
+	textWall1 = new Texture("./res/textures/Wall1_color.png");
+	textWall2 = new Texture("./res/textures/Wall2_color.png");
+	textWall3 = new Texture("./res/textures/Wall3_color.png");
+
 	textBlock = new Texture("./res/textures/blockTexture.png");
 	textCorgi1 = new Texture("./res/textures/corgiOrangeTexture.png");
 	textCorgi2 = new Texture("./res/textures/corgiBlueTexture.png");
@@ -107,6 +126,8 @@ int main() {
 	textBomb2 = new Texture("./res/textures/bombTexture2.png");
 	textBomb3 = new Texture("./res/textures/bombTexture3.png");
 	textBomb4 = new Texture("./res/textures/bombTexture4.png");
+
+	textExplosion = new Texture("./res/textures/ExplosionTop_color.png");
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -287,7 +308,16 @@ int main() {
 			//Add Walls and floor
 			GameObject* piece = new Floor(row, col, ground, textGround);
 			if ((row % 2 == 0 && col % 2 == 0) || (row == 0 || row == ROWS - 1) || (col == 0 || col == COLS - 1)) {
-				piece = new Wall(row, col, wall, textWall);
+				int num = rand();
+				if (num % 3 == 0) {
+					piece = new Wall(row, col, wall1, textWall1);
+				}
+				if (num % 3 == 1) {
+					piece = new Wall(row, col, wall2, textWall2);
+				}
+				if (num % 3 == 2) {
+					piece = new Wall(row, col, wall3, textWall3);
+				}
 			}
 
 			gameBoard[row][col].push_back(piece);
@@ -342,9 +372,6 @@ int main() {
 			}
 		}
 		for (Corgi* c : corgis) {
-			if (ghosts) {
-				std::cout << "Ghosts" << std::endl;
-			}
 			if (ghosts || !c->isDestroyed()) {
 				c->getTexture()->bind(0);
 				Transform trans = transforms[c->getRow()][c->getCol()];
@@ -358,7 +385,6 @@ int main() {
 		for (it = bombs.begin(); it != bombs.end();) {
 			Bomb* b = (*it);
 			if (timer % 50 == 0) {
-				b->decrementTimer();
 				b->decrementTimer();
 			}
 			if (b->getTimer() <= 0 && !b->isDestroyed()) {
@@ -375,16 +401,32 @@ int main() {
 				bool contRight = true;
 				bool contLeft = true;
 				for (int j = 1; j < blastRadius + 1; j++) {
+					if (contUp) {
+						explosions.push_back(new Explosion(row + j, col, explosion, textExplosion));
+					}
+					if (contDown) {
+						explosions.push_back(new Explosion(row - j, col, explosion, textExplosion));
+					}
+					if (contLeft) {
+						explosions.push_back(new Explosion(row, col + j, explosion, textExplosion));
+					}
+					if (contRight) {
+						explosions.push_back(new Explosion(row, col - j, explosion, textExplosion));
+					}
+
 					if (contUp && !isExploded(row + j, col)) {
 						contUp = false;
 					}
 					if (contDown && !isExploded(row - j, col)) {
+						//Draw Explosion
 						contDown = false;
 					}
 					if (contRight && !isExploded(row, col + j)) {
+						//Draw Explosion
 						contRight = false;
 					}
 					if (contLeft && !isExploded(row, col - j)) {
+						//Draw Explosion
 						contLeft = false;
 					}
 				}
@@ -396,6 +438,34 @@ int main() {
 			} else {
 				it++;
 			}
+		}
+
+		std::vector<Explosion*>::iterator it_e;
+		for (it_e = explosions.begin(); it_e != explosions.end();) {
+			Explosion* e = *it_e;
+
+			if (timer % 5 == 0) {
+				e->decrementTimer();
+			}
+
+			if (e->getTimer() > 0) {
+				e->getTexture()->bind(0);
+				Transform trans = transforms[e->getRow()][e->getCol()];
+				Transform* transform = (Transform*)malloc(sizeof(Transform));
+				transform = (Transform*)memcpy(transform, &trans, sizeof(Transform));
+				transform->getRotation().y = e->getTimer();
+				transform->getScale().y = e->getTimer();
+				shader.update(*transform, *camera);
+				e->getMesh()->draw();
+				free(transform);
+				it_e++;
+			}
+			else {
+				it_e = explosions.erase(it_e);
+				delete(e);
+			}
+
+			std::cout << "EXPLOSION HAPPENING" << std::endl;
 		}
 
 		display.update(*camera);
@@ -425,7 +495,9 @@ int main() {
 
 	delete(ground);
 	delete(block);
-	delete(wall);
+	delete(wall1);
+	delete(wall2);
+	delete(wall3);
 	delete(bomb1);
 	delete(bomb2);
 	delete(bomb3);
@@ -437,7 +509,9 @@ int main() {
 	delete(ghost4);
 
 	delete(textGround);
-	delete(textWall);
+	delete(textWall1);
+	delete(textWall2);
+	delete(textWall3);
 	delete(textBlock);
 	delete(textCorgi1);
 	delete(textCorgi2);
@@ -457,12 +531,6 @@ int main() {
 bool isExploded(int row, int col) {
 	bool cont = true;
 	std::vector<GameObject*> cell = gameBoard[row][col];
-	for (unsigned int i = 0; i < bombs.size(); i++) {
-		Bomb* bomb = bombs.at(i);
-		if (bomb->getRow() == row && bomb->getCol() == col) {
-			bomb->hit();
-		}
-	}
 	for (unsigned int i = 0; i < corgis.size(); i++) {
 		Corgi* corgi = corgis.at(i);
 		if (corgi->getRow() == row && corgi->getCol() == col) {
