@@ -22,7 +22,7 @@
 //#define WIDTH 1280
 //#define HEIGHT 720
 #define WIDTH 1280
-#define HEIGHT 600
+#define HEIGHT 720
 
 #define ROWS 11
 #define COLS 11
@@ -94,7 +94,7 @@ int main() {
 	Transform* groundTrans = new Transform (thing, glm::vec3(), 1);
 	Texture* textGround = new Texture ("./res/textures/Ground_color.png");
 
-	tile = new Mesh("./res/obj/floor.obj");
+	tile = new Mesh("./res/obj/Ground.obj");
 	block = new Mesh("./res/obj/block.obj");
 
 	wall1 = new Mesh("./res/obj/Wall1.obj");
@@ -298,7 +298,7 @@ int main() {
 	corgis.push_back(new Corgi(1, COLS - 2, corgi, textCorgi3, ghost3, textGhost3));
 	corgis.push_back(new Corgi(ROWS - 2, 1, corgi, textCorgi4, ghost4, textGhost4));
 
-	ghosts = true;
+	ghosts = false;
 
 	for (int row = 0; row < ROWS; row++) {
 		for (int col = 0; col < COLS; col++) {
@@ -361,11 +361,6 @@ int main() {
 		display.clear(0.0f, 0.0f, 0.0f, 0);
 
 		shader.bind();
-
-		//Draw the Ground Plane Sweetie <3
-		textGround->bind(0);
-		shader.update(*groundTrans, *camera);
-		ground->draw();
 
 		for (int row = 0; row < ROWS; row++) {
 			for (int col = 0; col < COLS; col++) {

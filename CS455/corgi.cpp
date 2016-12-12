@@ -8,7 +8,7 @@ Corgi::Corgi(int x, int y, Mesh* mesh, Texture* texture, Mesh* ghostMesh, Textur
 	this->dir = Direction::UP;
 	this->hp = 1;
 	this->numBombs = 1;
-	this->blastRadius = 5;
+	this->blastRadius = 1;
 	this->infinite = false;
 	this->ghostMesh = ghostMesh;
 	this->ghostTexture = ghostTexture;
